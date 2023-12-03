@@ -97,6 +97,9 @@ public class User {
     public String getProviderId() {
         return providerId;
     }
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
 
     public String getVerificationCode() {
         return verificationCode;
@@ -106,7 +109,4 @@ public class User {
         this.verificationCode = verificationCode;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
-    }
 }

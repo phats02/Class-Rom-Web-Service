@@ -1,5 +1,6 @@
 package com.example.springsocial.controller;
 
+import com.example.springsocial.util.UrlUtils;
 import com.example.springsocial.exception.BadRequestException;
 import com.example.springsocial.model.AuthProvider;
 import com.example.springsocial.model.User;
@@ -11,6 +12,8 @@ import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,8 +22,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.Properties;
+
 import net.bytebuddy.utility.RandomString;
 
 @RestController
@@ -38,6 +51,8 @@ public class AuthController {
 
     @Autowired
     private TokenProvider tokenProvider;
+    @Autowired
+    private JavaMailSender mailSender;
 
 
     @PostMapping("/login")
@@ -59,8 +74,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request)
+            throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
         }
 
@@ -73,10 +89,16 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         //Generate random verification code
-        String randomCode=RandomString.make(64);
+        String randomCode = RandomString.make(64);
         user.setVerificationCode(randomCode);
 
+
+        //sent verification mail
+        String siteURL = UrlUtils.getSiteURL(request);
+        sendVerificationEmail(user, siteURL);
+
         User result = userRepository.save(user);
+
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/user/me")
@@ -86,9 +108,59 @@ public class AuthController {
                 .body(new ApiResponse(true, "User registered successfully@"));
     }
 
+    public void sendVerificationEmail(User user, String siteURL)
+            throws MessagingException, UnsupportedEncodingException {
+
+
+        final String username = "ggclassroom2324@gmail.com";
+        final String password = "bbscdrwfniqfdkpc";
+        String mailContent = "Dear " + user.getName()  +"\n\n";
+        String verifyURL = siteURL + "/auth/signup/verify?code=" + user.getVerificationCode();
+
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.socketFactory.port", "587");
+        prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(
+                    Message.RecipientType.TO,
+                    InternetAddress.parse(user.getEmail())
+            );
+            message.setSubject("GG Classroom");
+
+            mailContent += "Please click the link below to verify your registration:" + "\n\n";
+            mailContent += "<a href=\"" + verifyURL + "\">VERIFY</a>" + "\n\n";
+            mailContent += "<p> Thank you <br>GG Classroom</p>";
+
+            message.setContent(mailContent, "text/html; charset=utf-8"); // Set content type to HTML
+
+            Transport.send(message);
+
+            System.out.println("Done");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     @GetMapping("/health")
-    public String getHealth(){
+    public String getHealth() {
         return "worked!";
     }
 

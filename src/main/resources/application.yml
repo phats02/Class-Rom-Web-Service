@@ -1,4 +1,19 @@
 spring:
+#    mail:
+#      host: smtp.gmail.com
+#      port: 587
+#      username: ggclassroom2324@gmail.com.com
+#      password: bbscdrwfniqfdkpc
+#      properties:
+#        mail:
+#          smtp:
+#            auth: true
+#            starttls:
+#              enable: true
+#            ssl:
+#              trust: smtp.gmail.com
+
+
     datasource:
         url: jdbc:postgresql://ep-rough-poetry-96578134.ap-southeast-1.aws.neon.tech/grade_class?user=dev&password=yWPQNt2blSA8&sslmode=require
         username: root
