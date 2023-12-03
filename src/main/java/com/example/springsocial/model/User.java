@@ -35,6 +35,9 @@ public class User {
 
     private String providerId;
 
+    @Column(name="verification_code",updatable = false)
+    private String verificationCode;
+
     public Long getId() {
         return id;
     }
@@ -93,6 +96,14 @@ public class User {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 
     public void setProviderId(String providerId) {

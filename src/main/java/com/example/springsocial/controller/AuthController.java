@@ -21,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import net.bytebuddy.utility.RandomString;
 
 @RestController
 @RequestMapping("/auth")
@@ -38,9 +39,10 @@ public class AuthController {
     @Autowired
     private TokenProvider tokenProvider;
 
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        System.out.println("con cac");
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -68,8 +70,11 @@ public class AuthController {
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        //Generate random verification code
+        String randomCode=RandomString.make(64);
+        user.setVerificationCode(randomCode);
 
         User result = userRepository.save(user);
 
