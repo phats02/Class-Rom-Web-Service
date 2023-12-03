@@ -1,5 +1,6 @@
 package com.example.springsocial.controller;
 
+import com.example.springsocial.security.CustomUserDetailsService;
 import com.example.springsocial.util.UrlUtils;
 import com.example.springsocial.exception.BadRequestException;
 import com.example.springsocial.model.AuthProvider;
@@ -11,13 +12,14 @@ import com.example.springsocial.payload.SignUpRequest;
 import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,7 +33,6 @@ import java.net.URI;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 import net.bytebuddy.utility.RandomString;
@@ -53,7 +54,8 @@ public class AuthController {
     private TokenProvider tokenProvider;
     @Autowired
     private JavaMailSender mailSender;
-
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -100,6 +102,7 @@ public class AuthController {
         User result = userRepository.save(user);
 
 
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/user/me")
                 .buildAndExpand(result.getId()).toUri();
@@ -111,11 +114,10 @@ public class AuthController {
     public void sendVerificationEmail(User user, String siteURL)
             throws MessagingException, UnsupportedEncodingException {
 
-
         final String username = "ggclassroom2324@gmail.com";
         final String password = "bbscdrwfniqfdkpc";
-        String mailContent = "Dear " + user.getName()  +"\n\n";
-        String verifyURL = siteURL + "/auth/signup/verify?code=" + user.getVerificationCode();
+        String mailContent = "Dear " + user.getName() + "\n\n";
+        String verifyURL = siteURL + "/auth/verify?code=" + user.getVerificationCode();
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -158,6 +160,36 @@ public class AuthController {
 
     }
 
+
+
+    public boolean verify(String verificationCode) {
+        User user = customUserDetailsService.loadUserByVerificationCode(verificationCode);
+        if (user == null ) {
+            return false;
+        } else {
+            //customUserDetailsService.enable(user.getId());
+            user.setEmailVerified(true);
+            userRepository.save(user);
+
+            return true;
+        }
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity<ApiResponse> verifyAccount(@Param("code") String code) {
+        boolean verified = verify(code);
+
+        String message = verified ? "Email verified successfully" : "Email verification failed";
+
+        ApiResponse response = new ApiResponse(verified, message);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/user/me")
+                .buildAndExpand() // You need to specify the path variables here if needed
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
+    }
 
     @GetMapping("/health")
     public String getHealth() {
