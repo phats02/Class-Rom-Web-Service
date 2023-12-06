@@ -26,14 +26,20 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.time.LocalDate;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
+
+import java.time.LocalTime;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -81,14 +87,18 @@ public class AuthController {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
         }
-
+        LocalDate currentTime = LocalDate.now();
         // Creating user's account
         User user = new User();
+
+        user.setDob(signUpRequest.getDob());
+        user.setCreateTime(currentTime);
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
         user.setProvider(AuthProvider.local);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(signUpRequest.getRole());
 
         //Generate random verification code
         String randomCode = RandomString.make(64);
@@ -102,7 +112,6 @@ public class AuthController {
         User result = userRepository.save(user);
 
 
-
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/user/me")
                 .buildAndExpand(result.getId()).toUri();
@@ -113,6 +122,7 @@ public class AuthController {
 
     public void sendVerificationEmail(User user, String siteURL)
             throws MessagingException, UnsupportedEncodingException {
+
 
         final String username = "ggclassroom2324@gmail.com";
         final String password = "bbscdrwfniqfdkpc";
@@ -161,14 +171,16 @@ public class AuthController {
     }
 
 
-
     public boolean verify(String verificationCode) {
         User user = customUserDetailsService.loadUserByVerificationCode(verificationCode);
-        if (user == null ) {
+        if (user == null) {
             return false;
         } else {
-            //customUserDetailsService.enable(user.getId());
             user.setEmailVerified(true);
+            if (user.getRole() == "Student") {
+                user.setStudentID(user.getId());
+            }
+
             userRepository.save(user);
 
             return true;

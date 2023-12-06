@@ -1,17 +1,17 @@
 spring:
-#    mail:
-#      host: smtp.gmail.com
-#      port: 587
-#      username: ggclassroom2324@gmail.com.com
-#      password: bbscdrwfniqfdkpc
-#      properties:
-#        mail:
-#          smtp:
-#            auth: true
-#            starttls:
-#              enable: true
-#            ssl:
-#              trust: smtp.gmail.com
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: ggclassroom2324@gmail.com.com
+      password: bbscdrwfniqfdkpc
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+            ssl:
+              trust: smtp.gmail.com
 
 
     datasource:
@@ -24,6 +24,11 @@ spring:
         hibernate:
             ddl-auto: update
             naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+            jdbc:
+              lob:
+                non_contextual_creation: true
+
+
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL5InnoDBDialect

@@ -1,9 +1,13 @@
 package com.example.springsocial.model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.time.LocalTime;
+import java.time.LocalDate;
+
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -37,6 +41,61 @@ public class User {
 
     @Column(name="verification_code",updatable = false)
     private String verificationCode;
+
+    @JsonFormat(pattern = "yyyy/MM/dd")
+
+    private LocalDate  dob;
+    private  String role;
+    @Column(name="update_time")
+
+    private LocalDate updateTime;
+    @Column(name="student_id")
+
+    private long studentID;
+    @Column(name="create_time",updatable = false)
+
+    private LocalDate createTime;
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public LocalDate getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDate createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDate getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDate updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public long getStudentID() {
+        return studentID;
+    }
+
+    public void setStudentID(long studentID) {
+        this.studentID = studentID;
+    }
+
 
     public Long getId() {
         return id;
