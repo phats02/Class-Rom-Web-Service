@@ -177,12 +177,13 @@ public class AuthController {
             return false;
         } else {
             user.setEmailVerified(true);
-            if (user.getRole() == "Student") {
+            System.out.println(user.getRole());
+            if(user.getRole().equals("Student")){
+                System.out.println("IS STUDENT");
+
                 user.setStudentID(user.getId());
             }
-
             userRepository.save(user);
-
             return true;
         }
     }
