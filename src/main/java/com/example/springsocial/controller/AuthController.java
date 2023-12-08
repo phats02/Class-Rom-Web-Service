@@ -204,6 +204,9 @@ public class AuthController {
 
     @GetMapping("/health")
     public String getHealth() {
+        System.out.println(System.getenv("DDEV_CLIENT_HOST"));
+        System.out.println(System.getenv("DPRODUCTION_CLIENT_HOST"));
+        System.out.println(System.getenv("DFRONT_END_SITE"));
         return "worked!";
     }
 
