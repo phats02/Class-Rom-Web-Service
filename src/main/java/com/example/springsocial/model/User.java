@@ -1,4 +1,5 @@
 package com.example.springsocial.model;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,20 +40,20 @@ public class User {
 
     private String providerId;
 
-    @Column(name="verification_code",updatable = false)
+    @Column(name = "verification_code", updatable = false)
     private String verificationCode;
 
     @JsonFormat(pattern = "yyyy/MM/dd")
 
-    private LocalDate  dob;
-    private  String role;
-    @Column(name="update_time")
+    private LocalDate dob;
+    private String role;
+    @Column(name = "update_time")
 
     private LocalDate updateTime;
-    @Column(name="student_id")
+    @Column(name = "student_id")
 
     private long studentID;
-    @Column(name="create_time",updatable = false)
+    @Column(name = "create_time", updatable = false)
 
     private LocalDate createTime;
 
@@ -156,6 +157,7 @@ public class User {
     public String getProviderId() {
         return providerId;
     }
+
     public void setProviderId(String providerId) {
         this.providerId = providerId;
     }

@@ -22,7 +22,6 @@ public class SignUpRequest {
     @NotBlank
     private String password;
     @JsonFormat(pattern = "yyyy/MM/dd")
-
     private LocalDate dob;
     private  String role;
     private LocalDate updateTime;
