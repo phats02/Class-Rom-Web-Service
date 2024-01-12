@@ -291,7 +291,6 @@ module.exports = {
   getDefaultInvitation: async (req, res, next) => {
     const course = await Course.findOne({
       _id: req.params.id,
-      teachers: req.user.id,
     });
     if (course) {
       const invitation = await Invitation.findOne({

@@ -4,6 +4,7 @@ import SwipeableViews from "react-swipeable-views";
 import ClassRoomSetting from "./Setting";
 import Stream from "./Stream";
 import Grade from "./Grade";
+import People from "./People";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -70,7 +71,7 @@ const RightSide = () => {
           <Stream></Stream>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          People
+          <People />
         </TabPanel>
         <TabPanel value={value} index={2}>
           <Grade />

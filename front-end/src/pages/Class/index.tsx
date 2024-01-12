@@ -134,27 +134,8 @@ const ClassRoom = () => {
       </div>
 
       <Box sx={{ display: "flex", maxWidth: "100%", width: "100vw" }}>
-        {/* <LeftSide currentClassRoom={currentClassRoom as any} /> */}
         <RightSide />
       </Box>
-      {openAddClassmate && (
-        <AddClassmate
-          isOpen={openAddClassmate}
-          handleClose={() => {
-            setOpenAddClassmate(false);
-          }}
-          handleInviteUser={handleInviteUser}
-        />
-      )}
-      {openDeleteClassModal && (
-        <DeleteClassModal
-          isOpen={openDeleteClassModal}
-          handleClose={() => {
-            setOpenDeleteClassModal(false);
-          }}
-          handleDelete={handleDeleteClass}
-        ></DeleteClassModal>
-      )}
     </div>
   );
 };

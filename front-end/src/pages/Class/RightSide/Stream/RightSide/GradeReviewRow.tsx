@@ -30,12 +30,14 @@ const getStyleOfStatus = () => {
   };
   const SuccessStyle = {
     backgroundColor: "#A1EEBD",
-    border: "1px solid #4F6F52",
+  };
+  const RejectedStyle = {
+    backgroundColor: "#FF8F8F",
   };
   const data = {
     [GradeReviewsStatus.PENDING]: PendingStyle,
     [GradeReviewsStatus.FINALIZED]: SuccessStyle,
-    [GradeReviewsStatus.REJECTED]: {},
+    [GradeReviewsStatus.REJECTED]: RejectedStyle,
   };
   return data;
 };

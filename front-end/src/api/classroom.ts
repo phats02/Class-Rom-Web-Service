@@ -3,6 +3,7 @@ import { ClassRoom, Assignment, Grade } from "../types/Classroom.type";
 import { FailedResponse } from "../types/Response.type";
 import { GradeReview } from "../types/Review.type";
 import { configuredAxios } from "./axios-config";
+import { Invitation } from "../types/others.type";
 
 const getAllClass = async () => {
   const res = await configuredAxios.get("/courses");
@@ -68,6 +69,17 @@ type InviteBody = {
 
 const inviteUser = async (inviteInfo: InviteBody) => {
   const res = await configuredAxios.post("/courses/invite", inviteInfo);
+  return res.data;
+};
+
+const getInvitation = async (
+  classRoomId: string
+): Promise<
+  FailedResponse | { success: true; invitation: Invitation; message: string }
+> => {
+  const res = await configuredAxios.get(
+    "/courses/" + classRoomId + "/invitation"
+  );
   return res.data;
 };
 
@@ -245,6 +257,7 @@ export const ClassRoomApi = {
   getCurrentClassInfo,
   joinClassWithCode,
   inviteUser,
+  getInvitation,
   deleteClass,
   updateClassroom,
   addAssignment,
