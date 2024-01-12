@@ -9,6 +9,18 @@ const fetchUserInfo = async (
   return res.data;
 };
 
+const updateUserInfo = async (
+  userId: string,
+  body: {
+    name: string;
+    student: string;
+  }
+): Promise<FailedResponse | { code: number; success: true; user: User }> => {
+  const res = await configuredAxios.put("/users/" + userId, body);
+  return res.data;
+};
+
 export const UserApi = {
   fetchUserInfo,
+  updateUserInfo,
 };

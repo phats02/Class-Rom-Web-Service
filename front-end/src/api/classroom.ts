@@ -1,5 +1,7 @@
+import { Comment } from "./../types/Review.type";
 import { ClassRoom, Assignment, Grade } from "../types/Classroom.type";
 import { FailedResponse } from "../types/Response.type";
+import { GradeReview } from "../types/Review.type";
 import { configuredAxios } from "./axios-config";
 
 const getAllClass = async () => {
@@ -163,6 +165,80 @@ const finalizeGrade = async (
   return res.data;
 };
 
+const createReviewRequest = async (
+  classSlug: string,
+  assignmentId: string,
+  body: {
+    expectedGrade: number;
+    message: string;
+  }
+) => {
+  const res = await configuredAxios.post(
+    "/courses/" + classSlug + "/assignment/" + assignmentId + "/review",
+    body
+  );
+  return res.data;
+};
+
+const getReviewRequest = async (
+  classSlug: string,
+  assignmentId: string
+): Promise<
+  FailedResponse | { code: number; success: true; gradeReviews: GradeReview[] }
+> => {
+  const res = await configuredAxios.get(
+    "/courses/" + classSlug + "/assignment/" + assignmentId + "/review"
+  );
+  return res.data;
+};
+
+const setFinalizeReview = async (
+  classSlug: string,
+  assignmentId: string,
+  reviewId: string,
+  body: {
+    grade: number;
+    approve: boolean;
+  }
+): Promise<
+  FailedResponse | { code: string; success: true; message: string }
+> => {
+  const res = await configuredAxios.post(
+    "/courses/" +
+      classSlug +
+      "/assignment/" +
+      assignmentId +
+      "/review/" +
+      reviewId +
+      "/finalize",
+    body
+  );
+  return res.data;
+};
+
+const addReviewComment = async (
+  classSlug: string,
+  assignmentId: string,
+  reviewId: string,
+  body: {
+    content: string;
+  }
+): Promise<
+  | FailedResponse
+  | { code: string; success: true; message: string; comment: Comment }
+> => {
+  const res = await configuredAxios.post(
+    "/courses/" +
+      classSlug +
+      "/assignment/" +
+      assignmentId +
+      "/review/" +
+      reviewId +
+      "/comment",
+    body
+  );
+  return res.data;
+};
 export const ClassRoomApi = {
   getAllClass,
   createClass,
@@ -180,4 +256,11 @@ export const AssignmentGradeAPI = {
   setGradeAssignment,
   getGrade,
   finalizeGrade,
+};
+
+export const ReviewAPI = {
+  createReviewRequest,
+  getReviewRequest,
+  setFinalizeReview,
+  addReviewComment,
 };

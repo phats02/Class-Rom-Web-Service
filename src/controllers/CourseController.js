@@ -1094,7 +1094,7 @@ module.exports = {
     const reviewId = req.params.reviewId;
     const assignmentId = req.params.id;
     const course = req.course;
-    const isTeacher = req;
+    const { isTeacher } = req;
     const assignment = await Assignment.findById(assignmentId);
     if (!assignment) {
       return res.json({

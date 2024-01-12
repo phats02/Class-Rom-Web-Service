@@ -208,10 +208,6 @@ const Grade = () => {
     [assignments]
   );
 
-  useEffect(() => {
-    console.log("🚀 ~ file: index.tsx:213 ~ Grade ~ columns:", columns);
-  }, [assignments]);
-
   return (
     <Box sx={{ height: 400, width: "100%" }}>
       <DataGrid

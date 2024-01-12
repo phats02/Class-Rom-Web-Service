@@ -12,6 +12,8 @@ export type User = {
   name: string;
   type: UserType;
   _id: string;
+  updatedAt: string;
+  student: string;
 };
 export interface UserAuth {
   accessToken: string;

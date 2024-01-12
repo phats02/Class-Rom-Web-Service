@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createUseStyles } from "react-jss";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../../redux-toolkit/store";
 import AssignmentSection from "./AssignmentSection";
 const useStyle = createUseStyles({
@@ -15,6 +15,7 @@ const StreamRightSide = () => {
   const currentClassRoom = useSelector(
     (state: RootState) => state.classroomReducer.currentClassRoom
   );
+
   return (
     <div className={classes.container}>
       {currentClassRoom?.assignments.map((item) => (

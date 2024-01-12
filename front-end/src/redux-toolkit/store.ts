@@ -1,3 +1,4 @@
+import { gradeReviewReducer } from "./slice/gradeReview.slice";
 import { classroomReducer } from "./slice/classroom.slice";
 import { userReducer } from "./slice/user.slice";
 import { configureStore } from "@reduxjs/toolkit";
@@ -10,6 +11,7 @@ export const store = configureStore({
     authReducer,
     userReducer,
     classroomReducer,
+    gradeReviewReducer,
   },
 });
 setupListeners(store.dispatch);
