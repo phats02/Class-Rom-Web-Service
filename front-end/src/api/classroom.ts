@@ -251,6 +251,19 @@ const addReviewComment = async (
   );
   return res.data;
 };
+
+const uploadStudentID = async (
+  classSlug: string,
+  body: { studentIds: string[] }
+): Promise<
+  FailedResponse | { code: string; success: true; message: string }
+> => {
+  const res = await configuredAxios.post(
+    "/courses/" + classSlug + "/studentid",
+    body
+  );
+  return res.data;
+};
 export const ClassRoomApi = {
   getAllClass,
   createClass,
@@ -263,6 +276,7 @@ export const ClassRoomApi = {
   addAssignment,
   updateAssignment,
   deleteAssignment,
+  uploadStudentID,
 };
 
 export const AssignmentGradeAPI = {

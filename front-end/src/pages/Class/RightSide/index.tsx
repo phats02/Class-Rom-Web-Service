@@ -1,10 +1,12 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import SwipeableViews from "react-swipeable-views";
 import ClassRoomSetting from "./Setting";
 import Stream from "./Stream";
 import Grade from "./Grade";
 import People from "./People";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux-toolkit/store";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -46,6 +48,20 @@ const RightSide = () => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+  const currentClassroom = useSelector(
+    (state: RootState) => state.classroomReducer.currentClassRoom
+  );
+  const currentUser = useSelector(
+    (state: RootState) => state.userReducer.currentUser
+  );
+
+  const isTeacher = useMemo(() => {
+    return (
+      currentClassroom?.teachers.find(
+        (item) => item._id === currentUser?._id
+      ) !== undefined
+    );
+  }, [currentClassroom, currentUser]);
 
   const handleChangeIndex = (index: number) => {
     setValue(index);
@@ -62,7 +78,7 @@ const RightSide = () => {
         >
           <Tab label="Stream" {...a11yProps(0)} />
           <Tab label="People" {...a11yProps(1)} />
-          <Tab label="Grade" {...a11yProps(1)} />
+          {isTeacher && <Tab label="Grade" {...a11yProps(1)} />}
           <Tab label="Setting" {...a11yProps(2)} />
         </Tabs>
       </Box>

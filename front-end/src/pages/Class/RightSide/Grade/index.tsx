@@ -4,18 +4,32 @@ import {
   GridCellEditStopReasons,
   GridCellParams,
   GridColDef,
+  GridColumnMenuColumnsItem,
+  GridColumnMenuFilterItem,
+  GridColumnMenuItemProps,
+  GridColumnMenuProps,
+  GridColumnMenuSortItem,
 } from "@mui/x-data-grid";
-import { Box, Button, IconButton, Popover } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  Popover,
+  Stack,
+} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../redux-toolkit/store";
 import { Assignment } from "../../../../types/Classroom.type";
-import _ from "lodash";
-import { useEffect, useMemo, useState } from "react";
+import _, { reduce } from "lodash";
+import { useMemo, useState } from "react";
 import { createUseStyles } from "react-jss";
 import { toast } from "react-toastify";
 import { AssignmentGradeAPI } from "../../../../api/classroom";
 import { updateGrade } from "../../../../redux-toolkit/slice/classroom.slice";
+import ButtonsFunction from "./ButtonsFunction";
+import DownloadGradeTemplateButton from "./ButtonsFunction/DownloadGradeTemplateButton";
 
 const useStyle = createUseStyles({
   finalizedItem: {
@@ -99,13 +113,13 @@ const PopoverButton = ({ params }: PopoverButtonProps) => {
     </div>
   );
 };
-
 const generateColumns = (
   assignments: Assignment[],
   finalizedItemClassName: string
 ): GridColDef[] => {
   return [
     { field: "id", headerName: "Student Id", width: 90 },
+    { field: "overall", headerName: "Overall Grade", width: 90 },
     ...assignments.map((item) => ({
       field: item._id,
       headerName: item.name + "-" + item.point,
@@ -130,7 +144,7 @@ const generateColumns = (
   ];
 };
 
-const generateRows = (assignments: Assignment[]) => {
+const generateRows = (studentIds: string[], assignments: Assignment[]) => {
   let rowList: any[] = [];
   assignments.forEach((item) => {
     rowList = rowList.concat(
@@ -142,12 +156,44 @@ const generateRows = (assignments: Assignment[]) => {
       )
     );
   });
-  return _(rowList)
+  const rowData = _(rowList)
     .groupBy("id")
     .map((objs) =>
       _.assignWith({}, ...objs, (val1: any, val2: any) => val1 || val2)
     )
     .value();
+
+  const studentPoint = studentIds.map((studentId) => {
+    const rowStudentData = rowData.find((item: any) => item.id === studentId);
+    return rowStudentData ? rowStudentData : { id: studentId };
+  });
+  const calculateOverallGrade = (
+    studentId: string,
+    assignments: Assignment[]
+  ) => {
+    let pointData: any[] = [];
+    assignments.forEach((item) => {
+      const gradePoint = item.grades.find((grade) => grade.id === studentId);
+      if (gradePoint)
+        pointData.push({
+          ration: item.point,
+          point: gradePoint.grade,
+        });
+    });
+    const sumRation = pointData.reduce(
+      (partialSum, a) => partialSum + a.ration,
+      0
+    );
+    const result = pointData.reduce(
+      (partialSum, a) => partialSum + (a.point * a.ration) / sumRation,
+      0
+    );
+    return result;
+  };
+  return studentPoint.map((item) => ({
+    ...item,
+    overall: calculateOverallGrade((item as any).id, assignments),
+  }));
 };
 const Grade = () => {
   const storeDispatch = useDispatch();
@@ -202,7 +248,10 @@ const Grade = () => {
     }
   };
 
-  const rows = useMemo(() => generateRows(assignments) as any, [assignments]);
+  const rows = useMemo(
+    () => generateRows(currentClassRoom.studentIds, assignments) as any,
+    [assignments]
+  );
   const columns = useMemo(
     () => generateColumns(assignments, classes.finalizedItem),
     [assignments]
@@ -210,6 +259,7 @@ const Grade = () => {
 
   return (
     <Box sx={{ height: 400, width: "100%" }}>
+      <ButtonsFunction />
       <DataGrid
         rows={rows}
         columns={columns}

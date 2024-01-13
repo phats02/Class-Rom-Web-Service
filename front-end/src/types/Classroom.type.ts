@@ -27,4 +27,5 @@ export type ClassRoom = {
   updatedAt: string;
   assignments: Assignment[];
   slug: string;
+  studentIds: string[];
 };

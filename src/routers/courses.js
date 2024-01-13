@@ -193,7 +193,7 @@ router.post(
 );
 
 router.post(
-  "/:slug/assignment/studentid",
+  "/:slug/studentid",
   [
     authenticate.verifyUser,
     courseMiddleware.getCourseBySlug,
