@@ -8,7 +8,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { Checkmark, Cross, Alert } from "../../../Common/Sign";
 
-enum VerifyResult {
+export enum VerifyResult {
   VERIFYING = "VERIFYING",
   SUCCESS = "SUCCESS",
   FAIL = "FAIL",
@@ -34,25 +34,32 @@ const VerifyPage = () => {
   const classes = useStyle();
   const [searchParams] = useSearchParams();
   const [verifyResult, setVerifyResult] = useState<VerifyResult>(
-    VerifyResult.SUCCESS
+    VerifyResult.VERIFYING
   );
 
   useEffect(() => {
     const verifyCode = async () => {
-      const token = searchParams.get("code");
+      const token = searchParams.get("activationCode");
       if (!token) {
         setVerifyResult(VerifyResult.FAIL);
         return;
       }
       try {
         setVerifyResult(VerifyResult.VERIFYING);
-        await VerifyAPI.verifyToken(token);
-        setVerifyResult(VerifyResult.SUCCESS);
+        const data = await VerifyAPI.verifyToken(token);
+        if (data.success) {
+          toast.success("Verify code successfully");
+          setVerifyResult(VerifyResult.SUCCESS);
+        } else {
+          setVerifyResult(VerifyResult.FAIL);
+          toast.error(data.message);
+        }
       } catch (err) {
         toast.error("Send request fail with error: " + err);
         setVerifyResult(VerifyResult.FAIL);
       }
     };
+    verifyCode();
   }, []);
   return (
     <>

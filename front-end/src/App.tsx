@@ -9,10 +9,12 @@ import NavBars from "./pages/NavTabs/navTabs";
 import { RootState } from "./redux-toolkit/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { privateRoutes, publicRoutes } from "./router";
+import { ACCESS_TOKEN } from "./utils/constant";
 function App() {
   useAuth();
   const accessToken = useSelector(
-    (state: any) => state.authReducer.accessToken
+    (state: any) =>
+      state.authReducer.accessToken || localStorage.getItem(ACCESS_TOKEN)
   );
   const currentUser = useSelector(
     (state: RootState) => state.userReducer.currentUser
@@ -25,6 +27,13 @@ function App() {
         {!!accessToken && <NavBars currentUser={currentUser}></NavBars>}
         <ToastContainer />
         <Routes>
+          {publicRoutes.map((item) => (
+            <Route
+              key={item.path}
+              path={item.path}
+              element={item.component}
+            ></Route>
+          ))}
           {privateRoutes.map((item) => (
             <Route
               key={item.path}
@@ -34,13 +43,6 @@ function App() {
                   {item.component}
                 </PrivateRouter>
               }
-            ></Route>
-          ))}
-          {publicRoutes.map((item) => (
-            <Route
-              key={item.path}
-              path={item.path}
-              element={item.component}
             ></Route>
           ))}
         </Routes>

@@ -47,7 +47,7 @@ export default function Register() {
       const res = await AuthApi.register(user);
       if (!res?.success) throw res?.message || "Cannot send your request";
       setIsLoading(false);
-      toast.success("Register successfully");
+      toast.success(res.message);
       navigate("/login");
     } catch (error) {
       console.log("🚀 ~ file: register.tsx:43 ~ handleSubmit ~ error:", error);

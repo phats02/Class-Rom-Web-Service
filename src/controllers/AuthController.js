@@ -265,7 +265,7 @@ module.exports = {
         res.json({
           code: res.statusCode,
           success: true,
-          message: "Password reset successful.",
+          message: "Password reset successfully",
         });
       }
     } else {

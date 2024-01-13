@@ -8,6 +8,7 @@ import Login from "./pages/Authentication/components/login";
 import Register from "./pages/Authentication/components/register";
 import VerifyPage from "./pages/Authentication/components/Verify";
 import JoinClass from "./pages/JoinClass";
+import ForgotPassword from "./pages/ForgotPassword";
 
 type RouterProp = {
   path: string;
@@ -47,8 +48,12 @@ const publicRoutes: RouterProp[] = [
     component: <Register />,
   },
   {
-    path: "auth/verify",
+    path: "/auth/activation",
     component: <VerifyPage />,
+  },
+  {
+    path: "/auth/forgot-password/:token",
+    component: <ForgotPassword />,
   },
   { path: "/classes/join/:classCode", component: <JoinClass /> },
 ];

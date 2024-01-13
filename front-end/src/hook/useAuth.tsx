@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { matchRoutes, useLocation, useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, USER_ID } from "../utils/constant";
 import { logoutUser, setToken } from "../redux-toolkit/slice/auth.slice";
 import { AppDispatch, RootState } from "../redux-toolkit/store";
 import { fetchUserInfo } from "../redux-toolkit/slice/user.slice";
+import { publicRoutes } from "../router";
 
 const useAuth = () => {
   const storeDispatch = useDispatch<AppDispatch>();
@@ -12,6 +13,9 @@ const useAuth = () => {
   const isExpired = useSelector(
     (state: RootState) => state.userReducer.isExpired
   );
+  const location = useLocation();
+  const match = matchRoutes(publicRoutes, location);
+  const router = match ? match[0].route : null;
 
   useEffect(() => {
     if (isExpired) {
@@ -25,7 +29,7 @@ const useAuth = () => {
     const userId = localStorage.getItem(USER_ID);
     if (!userId || !accessToken) {
       storeDispatch(logoutUser({}));
-      navigate("/login");
+      if (!router?.path) navigate("/login");
       return;
     }
     storeDispatch(setToken({ token: accessToken }));

@@ -55,52 +55,6 @@ const ClassRoom = () => {
   const currentClassRoom = useSelector(
     (state: RootState) => state.classroomReducer.currentClassRoom
   );
-  const currentUser = useSelector(
-    (state: RootState) => state.userReducer.currentUser
-  );
-  const isOwner = currentClassRoom?.owner._id === currentUser?._id;
-  const navigate = useNavigate();
-
-  const [openAddClassmate, setOpenAddClassmate] = useState<boolean>(false);
-  const [addUserRole, setAddUserRole] = useState<ClassRoomRole>(
-    ClassRoomRole.STUDENT
-  );
-  const [openDeleteClassModal, setOpenDeleteClassModal] =
-    useState<boolean>(false);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-
-  const handleInviteUser = async (email: string) => {
-    try {
-      const res = await ClassRoomApi.inviteUser({
-        courseId: currentClassRoom?._id as any,
-        email,
-        type: addUserRole,
-      });
-      if (!res?.success) throw res?.message || "Cannot send your request";
-
-      toast.success("Sended invitation link to " + email);
-      setOpenAddClassmate(false);
-    } catch (err) {
-      toast.warning(err as any);
-    }
-  };
-
-  const handleDeleteClass = async () => {
-    try {
-      setOpenDeleteClassModal(false);
-      setIsDeleting(true);
-      const res = await ClassRoomApi.deleteClass(currentClassRoom?._id as any);
-      if (!res?.success) throw res?.message || "Cannot send your request";
-      toast.success(`Delete class ${currentClassRoom?.name} successfully`);
-      storeDispatch(deleteClass(currentClassRoom?._id as any));
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-      toast.warning(error as string);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
 
   useEffect(() => {
     const _fetchCurrentClassRoom = async (id: string) => {

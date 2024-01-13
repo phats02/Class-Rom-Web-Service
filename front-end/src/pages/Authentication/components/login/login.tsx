@@ -18,6 +18,8 @@ import { setToken } from "../../../../redux-toolkit/slice/auth.slice";
 import { toast } from "react-toastify";
 import { setCurrentUser } from "../../../../redux-toolkit/slice/user.slice";
 import { useGoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import ForgotPasswordModal from "./ForgotPasswordModal";
+import { Button } from "@mui/material";
 
 const defaultTheme = createTheme();
 
@@ -31,6 +33,7 @@ export default function Login() {
   const [formData, setFormData] = useState(initialForm);
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [isOpenForgotDialog, setIsOpenForgotDialog] = useState(false);
   const navigate = useNavigate();
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -44,6 +47,7 @@ export default function Login() {
         const res = await AuthApi.loginByGoogle(tokenResponse.access_token);
         dispatch(setToken({ token: res.jwt }));
         dispatch(setCurrentUser({ user: res.user }));
+        navigate("/home");
       } catch (err) {
         toast.error(err as string);
       }
@@ -64,7 +68,6 @@ export default function Login() {
     try {
       setIsLoading(true);
       const res = await AuthApi.login(formData);
-      console.log("🚀 ~ file: login.tsx:54 ~ handleSubmit ~ res:", res);
       if (!res?.success) throw res?.message || "Cannot send your request";
       dispatch(setToken({ token: res.jwt as any }));
       dispatch(setCurrentUser({ user: res.user as any }));
@@ -72,7 +75,7 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       console.log(error);
-      toast.warning("Login fail with error:" + error);
+      toast.error(error as any);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +173,13 @@ export default function Login() {
                 </LoadingButton>
                 <Grid container>
                   <Grid item xs>
-                    <Link to="/login">Forgot password?</Link>
+                    <Button
+                      onClick={() => {
+                        setIsOpenForgotDialog(true);
+                      }}
+                    >
+                      Forgot password
+                    </Button>
                   </Grid>
                   <Grid item>
                     <Link to="/register">
@@ -191,6 +200,14 @@ export default function Login() {
             </GoogleButton>
           </Grid>
         </Grid>
+        {isOpenForgotDialog && (
+          <ForgotPasswordModal
+            onClose={() => {
+              setIsOpenForgotDialog(false);
+            }}
+            isOpen={isOpenForgotDialog}
+          />
+        )}
       </ThemeProvider>
     </>
   );

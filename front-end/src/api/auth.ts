@@ -2,6 +2,7 @@ import axios from "axios";
 import { User } from "../redux-toolkit/slice/auth.slice";
 import { configuredAxios } from "./axios-config";
 import { API_BASE_URL } from "../utils/constant";
+import { FailedResponse } from "../types/Response.type";
 
 type UserLoginPayload = {
   email: string;
@@ -54,4 +55,37 @@ const loginByGoogle = async (
   });
   return res.data;
 };
-export const AuthApi = { login, register, loginByGoogle };
+
+const forgotPassword = async (
+  email: string
+): Promise<
+  FailedResponse | { success: true; message: string; code: number }
+> => {
+  const res = await configuredAxios.post("/auth/forgot-password", {
+    email,
+  });
+  return res.data;
+};
+
+const resetPassword = async (
+  token: string,
+  body: {
+    email: string;
+    password: string;
+  }
+): Promise<
+  FailedResponse | { success: true; message: string; code: number }
+> => {
+  const res = await configuredAxios.post(
+    "/auth/forgot-password/" + token,
+    body
+  );
+  return res.data;
+};
+export const AuthApi = {
+  login,
+  register,
+  loginByGoogle,
+  forgotPassword,
+  resetPassword,
+};
