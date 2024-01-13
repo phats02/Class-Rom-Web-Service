@@ -13,6 +13,11 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { createUseStyles } from "react-jss";
 import { Link } from "react-router-dom";
 import { User } from "../../redux-toolkit/slice/auth.slice";
+import { useAppDispatch } from "../../redux-toolkit/store";
+import { fetchAllNotification } from "../../redux-toolkit/slice/notification.slice";
+import Notification from "./Notification";
+import { io } from "socket.io-client";
+import { ACCESS_TOKEN, API_BASE_URL } from "../../utils/constant";
 
 const pages = ["My Class"];
 
@@ -51,6 +56,9 @@ const useStyle = createUseStyles({
 function NavBars({ currentUser }: TProps) {
   const classes = useStyle();
 
+  const storeDispatch = useAppDispatch();
+  const socket = React.useRef<any>(null);
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -69,6 +77,22 @@ function NavBars({ currentUser }: TProps) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  React.useEffect(() => {
+    storeDispatch(fetchAllNotification());
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    if (socket.current !== null) return;
+    socket.current = io(API_BASE_URL || "");
+    socket.current.emit("authenticate", { token: accessToken });
+    socket.current.on("notice", () => {
+      console.log("New notification");
+      storeDispatch(fetchAllNotification());
+    });
+    return () => {
+      socket.current.disconnect();
+      socket.current = null;
+    };
+  }, []);
 
   return (
     <AppBar position="static">
@@ -150,7 +174,8 @@ function NavBars({ currentUser }: TProps) {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 25 }}>
+            <Notification />
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <div className="profile-avatar">
@@ -184,7 +209,7 @@ function NavBars({ currentUser }: TProps) {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
+          </div>
         </Toolbar>
       </Container>
     </AppBar>

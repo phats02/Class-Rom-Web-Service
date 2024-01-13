@@ -8,3 +8,13 @@ export type Invitation = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type TNotification = {
+  _id: string;
+  userId: string;
+  sender: string;
+  message: string;
+  createdAt: string;
+  course: string;
+  viewed: boolean;
+};
