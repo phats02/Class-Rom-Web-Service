@@ -87,27 +87,25 @@ public class AuthController {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
         }
+        System.out.println("I'm HERE IN SIGNUP");
         LocalDate currentTime = LocalDate.now();
         // Creating user's account
         User user = new User();
 
-        user.setDob(signUpRequest.getDob());
-        user.setCreateTime(currentTime);
+
+        user.setCreatedAt(currentTime);
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
-        user.setProvider(AuthProvider.local);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(signUpRequest.getRole());
-
         //Generate random verification code
         String randomCode = RandomString.make(64);
-        user.setVerificationCode(randomCode);
+        //user.setActivationCode(randomCode);
 
 
         //sent verification mail
-        String siteURL = UrlUtils.getSiteURL(request);
-        sendVerificationEmail(user, siteURL);
+//        String siteURL = UrlUtils.getSiteURL(request);
+//        sendVerificationEmail(user, siteURL);
 
         User result = userRepository.save(user);
 
@@ -127,7 +125,7 @@ public class AuthController {
         final String username = "ggclassroom2324@gmail.com";
         final String password = "bbscdrwfniqfdkpc";
         String mailContent = "Dear " + user.getName() + "\n\n";
-        String verifyURL = siteURL + "/auth/verify?code=" + user.getVerificationCode();
+        String verifyURL = siteURL + "/auth/verify?code=" + user.getActivationCode();
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -162,7 +160,7 @@ public class AuthController {
 
             Transport.send(message);
 
-            System.out.println("Done");
+            System.out.println("Doneeeeeeeeeeeee");
 
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -171,36 +169,33 @@ public class AuthController {
     }
 
 
-    public boolean verify(String verificationCode) {
-        User user = customUserDetailsService.loadUserByVerificationCode(verificationCode);
-        if (user == null) {
-            return false;
-        } else {
-            user.setEmailVerified(true);
-            System.out.println(user.getRole());
-            if(user.getRole().equals("Student")){
-                user.setStudentID(user.getId());
-            }
-            userRepository.save(user);
-            return true;
-        }
-    }
+//    public boolean verify(String activationCode) {
+//        User user = customUserDetailsService.loadUserByActivationCode(activationCode);
+//        if (user == null) {
+//            return false;
+//        } else {
+//            user.setStatus(1);
+//
+//            userRepository.save(user);
+//            return true;
+//        }
+//    }
 
-    @GetMapping("/verify")
-    public ResponseEntity<ApiResponse> verifyAccount(@Param("code") String code) {
-        boolean verified = verify(code);
-
-        String message = verified ? "Email verified successfully" : "Email verification failed";
-
-        ApiResponse response = new ApiResponse(verified, message);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand() // You need to specify the path variables here if needed
-                .toUri();
-
-        return ResponseEntity.created(location).body(response);
-    }
+//    @GetMapping("/verify")
+//    public ResponseEntity<ApiResponse> verifyAccount(@Param("code") String code) {
+//        boolean verified = verify(code);
+//
+//        String message = verified ? "Email verified successfully" : "Email verification failed";
+//
+//        ApiResponse response = new ApiResponse(verified, message);
+//
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentContextPath().path("/user/me")
+//                .buildAndExpand() // You need to specify the path variables here if needed
+//                .toUri();
+//
+//        return ResponseEntity.created(location).body(response);
+//    }
 
     @GetMapping("/health")
     public String getHealth() {

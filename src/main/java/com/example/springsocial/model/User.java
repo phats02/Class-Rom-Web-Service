@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="_id")
     private Long id;
 
     @Column(nullable = false)
@@ -26,76 +27,33 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    private String imageUrl;
-
-    @Column(nullable = false)
-    private Boolean emailVerified = false;
-
     @JsonIgnore
     private String password;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private AuthProvider provider;
+    @Column(name = "activation_code")
+    private String activation_code;
 
-    private String providerId;
+    @Column(name = "update_at")
+    private LocalDate update_at;
 
-    @Column(name = "verification_code", updatable = false)
-    private String verificationCode;
+    @Column(name = "created_at")
+    private LocalDate created_at;
 
-    @JsonFormat(pattern = "yyyy/MM/dd")
+    @Column(name = "status")
+    private int status;
 
-    private LocalDate dob;
-    private String role;
-    @Column(name = "update_time")
+    @Column(name="type")
+    private int type;
+    @Column(name="phone_number")
+    private int phone_number;
+    @Column(name="google_id")
+    private String google_id;
+    @Column(name="facebook_id")
+    private String facebook_id;
+    @Column(name="forgot_password_code")
+    private String forgot_password_code;
 
-    private LocalDate updateTime;
-    @Column(name = "student_id")
 
-    private long studentID;
-    @Column(name = "create_time", updatable = false)
-
-    private LocalDate createTime;
-
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public LocalDate getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDate createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalDate getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDate updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public long getStudentID() {
-        return studentID;
-    }
-
-    public void setStudentID(long studentID) {
-        this.studentID = studentID;
-    }
 
 
     public Long getId() {
@@ -122,22 +80,6 @@ public class User {
         this.email = email;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public Boolean getEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(Boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -146,29 +88,84 @@ public class User {
         this.password = password;
     }
 
-    public AuthProvider getProvider() {
-        return provider;
+
+
+    public String getActivationCode() {
+        return this.activation_code;
     }
 
-    public void setProvider(AuthProvider provider) {
-        this.provider = provider;
+    public void setActivationCode(String activationcode) {
+        this.activation_code = activationcode;
     }
 
-    public String getProviderId() {
-        return providerId;
+    public LocalDate getUpdateAt() {
+        return update_at;
     }
 
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public void setUpdateAt(LocalDate updateAt) {
+        this.update_at = updateAt;
     }
 
-    public String getVerificationCode() {
-        return verificationCode;
+    public LocalDate getCreatedAt() {
+        return created_at;
     }
 
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.created_at = createdAt;
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getPhoneNumber() {
+        return phone_number;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phone_number = phoneNumber;
+    }
+
+    public String getGoogleId() {
+        return google_id;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.google_id = googleId;
+    }
+
+    public String getFacebookId() {
+        return facebook_id;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebook_id = facebookId;
+    }
+
+    public String getForgotPasswordCode() {
+        return forgot_password_code;
+    }
+
+    public void setForgotPasswordCode(String forgotPasswordCode) {
+        this.forgot_password_code = forgotPasswordCode;
+    }
+
+
+
+
+
 
 
 }

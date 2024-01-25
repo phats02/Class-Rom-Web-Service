@@ -16,6 +16,7 @@ spring:
 
     datasource:
         url: jdbc:postgresql://ep-rough-poetry-96578134.ap-southeast-1.aws.neon.tech/grade_class?user=dev&password=yWPQNt2blSA8&sslmode=require
+        #url: jdbc:mongodb+srv://bphm82:cZWwvX7nEw7xc40B@cluster0.h6muiik.mongodb.net/?retryWrites=true&w=majority
         username: root
         password: callicoder
 

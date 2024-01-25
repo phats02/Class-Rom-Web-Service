@@ -31,7 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email : " + email)
-        );
+                );
 
         return UserPrincipal.create(user);
     }
@@ -39,20 +39,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User", "id", id)
+                () -> new ResourceNotFoundException("User", "_id", id)
         );
 
         return UserPrincipal.create(user);
     }
 
-    @Transactional
-    public User loadUserByVerificationCode(String code) {
-        User user = userRepository.findByVerificationCode(code).orElseThrow(
-                () -> new ResourceNotFoundException("users", "verification_code", code)
-        );
-
-        return user;
-    }
+//    @Transactional
+//    public User loadUserByActivationCode(String code) {
+//        User user = userRepository.findByActivationCode(code).orElseThrow(
+//                () -> new ResourceNotFoundException("users", "activationCode", code)
+//        );
+//
+//        return user;
+//    }
 
     @Transactional
     public User loadUserByEmail(String email) {
