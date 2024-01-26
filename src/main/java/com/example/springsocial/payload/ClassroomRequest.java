@@ -5,24 +5,18 @@ import javax.validation.constraints.NotBlank;
 public class ClassroomRequest {
 
     @NotBlank
-    private String className;
+    private String name;
     private String description;
-    private String teacherName;
+    private String[] teachers=new String[100];
+    private String[] students=new String[1000];
+    private String owner;
 
-    public String getTeacherName() {
-        return teacherName;
+    public String getName() {
+        return name;
     }
 
-    public void setTeacherName(String teacherName) {
-        this.teacherName = teacherName;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -33,5 +27,28 @@ public class ClassroomRequest {
         this.description = description;
     }
 
+    public String[] getTeachers() {
+        return teachers;
+    }
 
+    public void setTeachers(String[] teachers) {
+
+        this.teachers = teachers;
+    }
+
+    public String[] getStudents() {
+        return students;
+    }
+
+    public void setStudents(String[] students) {
+        this.students = students;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 }

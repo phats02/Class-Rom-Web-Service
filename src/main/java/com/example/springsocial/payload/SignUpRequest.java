@@ -21,28 +21,14 @@ public class SignUpRequest {
 
     @NotBlank
     private String password;
-    @JsonFormat(pattern = "yyyy/MM/dd")
-    private LocalDate dob;
-    private  String role;
+
+
     private LocalDate updateTime;
     private long studentID;
     private LocalDate createTime;
 
-    public LocalDate getDob() {
-        return dob;
-    }
 
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     public LocalDate getCreateTime() {
         return createTime;

@@ -66,23 +66,28 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        User user = customUserDetailsService.loadUserByEmail(loginRequest.getEmail());
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+        if (user != null) {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String token = tokenProvider.createToken(authentication);
 
-        System.out.println(authentication);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = tokenProvider.createToken(authentication);
-        return ResponseEntity.ok(new AuthResponse(token));
+            AuthResponse authResponse = new AuthResponse(200, true, user, token);
+            return ResponseEntity.ok(authResponse);
+        } else {
+            ApiResponse apiResponse = new ApiResponse(200, false, "Incorrect email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
     }
 
-    @PostMapping("/signup")
+
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request)
             throws MessagingException, UnsupportedEncodingException {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
@@ -92,7 +97,8 @@ public class AuthController {
         // Creating user's account
         User user = new User();
 
-
+        String IDrandomCode = RandomString.make(24);
+        user.set_id(IDrandomCode);
         user.setCreatedAt(currentTime);
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
@@ -112,7 +118,7 @@ public class AuthController {
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand(result.getId()).toUri();
+                .buildAndExpand(result.get_id()).toUri();
 
         ApiResponse response = new ApiResponse(200, true, "Successful account registration. An email has been sent. Please check your inbox.");
 
@@ -190,7 +196,7 @@ public class AuthController {
         ApiResponse response = null;
         if (verified) {
             message = "Account activation successful.";
-            user.setActivationCode(null);
+            user.setActivationCode("");
             userRepository.save(user);
             response = new ApiResponse(200, verified, message);
 

@@ -5,62 +5,47 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "classroom", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "class_id")
+@Table(name = "courses", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "_id")
 })
 public class Classroom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "class_id")
-    private Long classId;
-    @Column(name = "teacher_id")
-    private Long teacherId;
-    @Column(name = "class_code")
-    private String classCode;
-    @NotNull
-    @Column(name = "class_name")
-    private String className;
+
+    private Long _id;
+    private String[] teachers= new String[100];
+    private String[] students= new String[1000];
+    private String name;
     private String description;
+    private LocalDate created_at;
+    private LocalDate update_at;
+    private String slug;
+    private String owner;
+    private String join_id;
+    //private String[] assignments= {"empty"};
 
-    @Column(name = "time_update")
-    private LocalDate timeUpdate;
-    @Column(name = "time_create")
-    private LocalDate timeCreate;
-    @Column(name = "is_finalgrade")
-    private boolean isFinalGrade;
-
-
-
-    public Long getClassId() {
-        return classId;
+    public String[] getTeachers() {
+        return teachers;
     }
 
-    public void setClassId(Long classId) {
-        this.classId = classId;
+    public void setTeachers(String[] teachers) {
+        this.teachers = teachers;
     }
 
-    public Long getTeacherId() {
-        return teacherId;
+    public String[] getStudents() {
+        return students;
     }
 
-    public void setTeacherId(Long teacherId) {
-        this.teacherId = teacherId;
+    public void setStudents(String[] students) {
+        this.students = students;
     }
 
-    public String getClassCode() {
-        return classCode;
+    public String getName() {
+        return name;
     }
 
-    public void setClassCode(String classCode) {
-        this.classCode = classCode;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -71,29 +56,63 @@ public class Classroom {
         this.description = description;
     }
 
-    public LocalDate getTimeUpdate() {
-        return timeUpdate;
+    public LocalDate getCreatedAt() {
+        return this.created_at;
     }
 
-    public void setTimeUpdate(LocalDate timeUpdate) {
-        this.timeUpdate = timeUpdate;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.created_at = createdAt;
     }
 
-    public LocalDate getTimeCreate() {
-        return timeCreate;
+    public LocalDate getUpdateAt() {
+        return update_at;
     }
 
-    public void setTimeCreate(LocalDate timeCreate) {
-        this.timeCreate = timeCreate;
+    public void setUpdateAt(LocalDate updateAt) {
+        this.update_at = updateAt;
     }
 
-    public boolean isFinalGrade() {
-        return isFinalGrade;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setFinalGrade(boolean finalGrade) {
-        isFinalGrade = finalGrade;
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getJoinId() {
+        return join_id;
+    }
+
+    public void setJoinId(String joinId) {
+        this.join_id = joinId;
+    }
+
+//    public String[] getAssignments() {
+//        return assignments;
+//    }
+//
+//    public void setAssignments(String[] assignments) {
+//        this.assignments = assignments;
+//    }
+
+    public Long get_id() {
+        return _id;
+    }
+
+    public void set_id(Long _id) {
+        this._id = _id;
+    }
+
+
 
 
 }

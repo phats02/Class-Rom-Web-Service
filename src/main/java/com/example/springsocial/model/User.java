@@ -17,8 +17,12 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="_id")
+    @Column(name="id")
     private Long id;
+
+
+    @Column(name="_id")
+    private String _id;
 
     @Column(nullable = false)
     private String name;
@@ -44,8 +48,7 @@ public class User {
 
     @Column(name="type")
     private int type=1;
-    @Column(name="phone_number")
-    private int phone_number;
+
     @Column(name="google_id")
     private String google_id;
     @Column(name="facebook_id")
@@ -55,13 +58,20 @@ public class User {
 
 
 
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getName() {
@@ -128,13 +138,6 @@ public class User {
         this.type = type;
     }
 
-    public int getPhoneNumber() {
-        return phone_number;
-    }
-
-    public void setPhoneNumber(int phoneNumber) {
-        this.phone_number = phoneNumber;
-    }
 
     public String getGoogleId() {
         return google_id;

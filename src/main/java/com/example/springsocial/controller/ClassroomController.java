@@ -28,7 +28,7 @@ import java.time.LocalDate;
 
 
 @RestController
-@RequestMapping("/classroom")
+@RequestMapping("/courses")
 public class ClassroomController {
     @Autowired
     private UserRepository userRepository;
@@ -36,31 +36,50 @@ public class ClassroomController {
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private ClassroomRepository classroomRepository;
+    private static void printVariableType(Object variable) {
+        // Get the runtime type of the variable
+        Class<?> variableType = variable.getClass();
 
-    @PostMapping("/create")
+        // Print the variable type
+        System.out.println("Variable type: " + variableType.getName());
+    }
+    @PostMapping("/store")
     public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest) {
 
-        String randomCode = RandomString.make(5);
+        String randomCode = RandomString.make(8);
         LocalDate currentTime = LocalDate.now();
-
-
+        String[] teachers_id= new String[classroomRequest.getTeachers().length];
+        String[] students_id= new String[classroomRequest.getStudents().length];
         Classroom classroom = new Classroom();
-        classroom.setClassName(classroomRequest.getClassName());
+
+
+        classroom.setName(classroomRequest.getName());
         classroom.setDescription(classroomRequest.getDescription());
-        classroom.setClassCode(randomCode);
-        classroom.setTimeCreate(currentTime);
-        classroom.setTimeUpdate(currentTime);
-        classroom.setFinalGrade(false);
-        classroom.setTeacherId(customUserDetailsService.loadUserByEmail(classroomRequest.getTeacherName()).getId());
+        classroom.setJoinId(randomCode);
+        classroom.setCreatedAt(currentTime);
+        classroom.setUpdateAt(currentTime);
+        for(int i = 0; i < classroomRequest.getTeachers().length; i++) {
+            classroom.setTeachers(classroomRequest.getTeachers()[i]);
+            printVariableType(teachers_id[i]);
+        }
+        for(int i = 0; i < classroomRequest.getStudents().length; i++) {
+            students_id[i] =(String)  classroomRequest.getStudents()[i];
+            printVariableType(students_id[i]);
+        }
+
+
+        classroom.setTeachers(classroomRequest.getTeachers());
+        classroom.setStudents(classroomRequest.getStudents());
+        classroom.setOwner(classroomRequest.getOwner());
 
         Classroom result = classroomRepository.save(classroom);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
-                .buildAndExpand(result.getClassId()).toUri();
+                .buildAndExpand(result.get_id()).toUri();
 
         return ResponseEntity.created(location)
-                .body(new ApiClassroomResponse(true, result.getClassCode(), result.getClassName(), result.getDescription(),result.getClassId(),result.getTeacherId(),result.getTimeCreate(),result.getTimeUpdate(),result.isFinalGrade()));
+                .body(new ApiClassroomResponse(true, 200,result));
 
     }
 
