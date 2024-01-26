@@ -13,6 +13,7 @@ import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -87,7 +88,6 @@ public class AuthController {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email address already in use.");
         }
-        System.out.println("I'm HERE IN SIGNUP");
         LocalDate currentTime = LocalDate.now();
         // Creating user's account
         User user = new User();
@@ -100,12 +100,12 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         //Generate random verification code
         String randomCode = RandomString.make(64);
-        //user.setActivationCode(randomCode);
+        user.setActivationCode(randomCode);
 
 
         //sent verification mail
-//        String siteURL = UrlUtils.getSiteURL(request);
-//        sendVerificationEmail(user, siteURL);
+        String siteURL = UrlUtils.getSiteURL(request);
+        sendVerificationEmail(user, siteURL);
 
         User result = userRepository.save(user);
 
@@ -114,8 +114,11 @@ public class AuthController {
                 .fromCurrentContextPath().path("/user/me")
                 .buildAndExpand(result.getId()).toUri();
 
-        return ResponseEntity.created(location)
-                .body(new ApiResponse(true, "User registered successfully@"));
+        ApiResponse response = new ApiResponse(200, true, "Successful account registration. An email has been sent. Please check your inbox.");
+
+        return ResponseEntity.created(location).body(response);
+
+
     }
 
     public void sendVerificationEmail(User user, String siteURL)
@@ -125,7 +128,7 @@ public class AuthController {
         final String username = "ggclassroom2324@gmail.com";
         final String password = "bbscdrwfniqfdkpc";
         String mailContent = "Dear " + user.getName() + "\n\n";
-        String verifyURL = siteURL + "/auth/verify?code=" + user.getActivationCode();
+        String verifyURL = siteURL + "/auth/activation?code=" + user.getActivationCode();
 
         Properties prop = new Properties();
         prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -160,7 +163,6 @@ public class AuthController {
 
             Transport.send(message);
 
-            System.out.println("Doneeeeeeeeeeeee");
 
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -169,33 +171,42 @@ public class AuthController {
     }
 
 
-//    public boolean verify(String activationCode) {
-//        User user = customUserDetailsService.loadUserByActivationCode(activationCode);
-//        if (user == null) {
-//            return false;
-//        } else {
-//            user.setStatus(1);
-//
-//            userRepository.save(user);
-//            return true;
-//        }
-//    }
+    public boolean verify(String verification_code) {
+        User user = customUserDetailsService.loadUserByActivationCode(verification_code);
+        if (user == null) {
+            return false;
+        } else {
+            user.setStatus(1);
+            userRepository.save(user);
+            return true;
+        }
+    }
 
-//    @GetMapping("/verify")
-//    public ResponseEntity<ApiResponse> verifyAccount(@Param("code") String code) {
-//        boolean verified = verify(code);
-//
-//        String message = verified ? "Email verified successfully" : "Email verification failed";
-//
-//        ApiResponse response = new ApiResponse(verified, message);
-//
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentContextPath().path("/user/me")
-//                .buildAndExpand() // You need to specify the path variables here if needed
-//                .toUri();
-//
-//        return ResponseEntity.created(location).body(response);
-//    }
+    @GetMapping("/activation")
+    public ResponseEntity<ApiResponse> verifyAccount(@Param("code") String code) {
+        boolean verified = verify(code);
+        User user = customUserDetailsService.loadUserByActivationCode(code);
+        String message = "";
+        ApiResponse response = null;
+        if (verified) {
+            message = "Account activation successful.";
+            user.setActivationCode(null);
+            userRepository.save(user);
+            response = new ApiResponse(200, verified, message);
+
+        } else {
+            message = "Your account has been disabled. Please contact the administrator.";
+            response = new ApiResponse(400, verified, message);
+        }
+
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/user/me")
+                .buildAndExpand() // You need to specify the path variables here if needed
+                .toUri();
+
+        return ResponseEntity.created(location).body(response);
+    }
 
     @GetMapping("/health")
     public String getHealth() {

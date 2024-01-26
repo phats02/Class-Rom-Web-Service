@@ -45,14 +45,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         return UserPrincipal.create(user);
     }
 
-//    @Transactional
-//    public User loadUserByActivationCode(String code) {
-//        User user = userRepository.findByActivationCode(code).orElseThrow(
-//                () -> new ResourceNotFoundException("users", "activationCode", code)
-//        );
-//
-//        return user;
-//    }
+    @Transactional
+    public User loadUserByActivationCode(String code) {
+        User user = userRepository.findByActivationCode(code).orElseThrow(
+                () -> new ResourceNotFoundException("users", "activation_code", code)
+        );
+
+        return user;
+    }
 
     @Transactional
     public User loadUserByEmail(String email) {

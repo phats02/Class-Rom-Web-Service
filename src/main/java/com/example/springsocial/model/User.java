@@ -31,7 +31,7 @@ public class User {
     private String password;
 
     @Column(name = "activation_code")
-    private String activation_code;
+    private String activationCode;
 
     @Column(name = "update_at")
     private LocalDate update_at;
@@ -40,10 +40,10 @@ public class User {
     private LocalDate created_at;
 
     @Column(name = "status")
-    private int status;
+    private int status=0;
 
     @Column(name="type")
-    private int type;
+    private int type=1;
     @Column(name="phone_number")
     private int phone_number;
     @Column(name="google_id")
@@ -88,14 +88,12 @@ public class User {
         this.password = password;
     }
 
-
-
     public String getActivationCode() {
-        return this.activation_code;
+        return activationCode;
     }
 
-    public void setActivationCode(String activationcode) {
-        this.activation_code = activationcode;
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 
     public LocalDate getUpdateAt() {
