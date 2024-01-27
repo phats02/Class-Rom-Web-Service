@@ -12,27 +12,27 @@ import java.util.ArrayList;
 public class Classroom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
     @Column(name = "_id")
     private String _id;
-    @Column(name="teachers")
+    @Column(name = "teachers")
     private String teachers;
-    @Column(name="students")
+    @Column(name = "students")
     private String students;
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
-    @Column(name="description")
+    @Column(name = "description")
     private String description;
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDate created_at;
-    @Column(name="update_at")
+    @Column(name = "update_at")
     private LocalDate update_at;
-    @Column(name="slug")
+    @Column(name = "slug")
     private String slug;
-    @Column(name="owner")
+    @Column(name = "owner")
     private String owner;
-    @Column (name="join_id")
+    @Column(name = "join_id")
     private String join_id;
 
     private String assignments;
@@ -133,6 +133,7 @@ public class Classroom {
     public void set_id(String _id) {
         this._id = _id;
     }
+
     public Long getId() {
         return id;
     }
@@ -140,8 +141,5 @@ public class Classroom {
     public void setId(Long id) {
         this.id = id;
     }
-
-
-
 
 }

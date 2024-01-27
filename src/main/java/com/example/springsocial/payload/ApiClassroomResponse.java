@@ -3,110 +3,65 @@ package com.example.springsocial.payload;
 import com.example.springsocial.model.Classroom;
 import com.example.springsocial.model.ClassroomRespone;
 import com.example.springsocial.model.User;
+
+import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.CustomUserDetailsService;
 import com.example.springsocial.util.ConvertStringToArrayList;
 import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Objects;
-
 public class ApiClassroomResponse {
 
-//    @Autowired
+    // @Autowired
     private boolean success;
-//    @Autowired
+    // @Autowired
     private int code;
-//    @Autowired
+    // @Autowired
     private ClassroomRespone course = new ClassroomRespone();
-//    @Autowired
     private String[] teachers;
-//    @Autowired
+    // @Autowired
     private String[] students;
-//    @Autowired
+    // @Autowired
     private String description;
-//    @Autowired
+    // @Autowired
     private String name;
-//    @Autowired
+    // @Autowired
     private String owner;
-//    @Autowired
+    // @Autowired
     private String joinId;
-//    @Autowired
+    // @Autowired
     private String[] assignments;
-//    @Autowired
+    // @Autowired
     private String[] studentsIds;
-//    @Autowired
+    // @Autowired
     private String _id;
-//    @Autowired
+    // @Autowired
     private LocalDate created_at;
-//    @Autowired
+    // @Autowired
     private LocalDate update_at;
-//    @Autowired
+    // @Autowired
     private String slug;
-    @Autowired
-    private ConvertStringToArrayList convertStringToArrayList=new ConvertStringToArrayList();
-
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService=new CustomUserDetailsService();
 
 
-    public ApiClassroomResponse(boolean success, int code, Classroom classroom, String type) {
-        String[] strStutdents = classroom.getStudents() != null
-                ? convertStringToArrayList.convertToArrayList(classroom.getStudents()).toArray(new String[0])
-                : new String[0];
-        String[] strTeachers = classroom.getTeachers() != null
-                ? convertStringToArrayList.convertToArrayList(classroom.getTeachers()).toArray(new String[0])
-                : new String[0];
-        String[] strAssignments = classroom.getAssignments() != null
-                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
-                : new String[0];
-        String[] strStudentsIds = classroom.getStudentsIds() != null
-                ? convertStringToArrayList.convertToArrayList(classroom.getStudentsIds()).toArray(new String[0])
-                : new String[0];
-        if (Objects.equals(type, "create")) {
-            this.course.setAssignments(strAssignments);
-            this.course.setStudents(strStutdents);
-            this.course.setStudentIds(strStudentsIds);
-            this.course.setTeachers(strTeachers);
+    public ApiClassroomResponse(boolean success, int code, ClassroomRespone classroom) {
 
-        } else if (Objects.equals(type, "show")) {
-            User[] userTeachers = new User[strTeachers.length];
-            User[] userStudents = new User[strStutdents.length];
-            User[] userStudentsIds = new User[strStudentsIds.length];
-        for(int i=0;i<strTeachers.length;i++){
-            System.out.println("LENGTH"+strTeachers.length);
-            System.out.println("TEACHER"+strTeachers[i]);
-            System.out.println(customUserDetailsService.loadUserById(6L));
-            userTeachers[i]=customUserDetailsService.loadUserBy_id(strTeachers[i]);
-        }
-        System.out.println("OUT TEACHER LOOP");
-        for(int i=0;i<strStutdents.length;i++){
-            System.out.println("STUDENT"+strStutdents[i]);
-            userStudents[i]=customUserDetailsService.loadUserBy_id(strStutdents[i]);
-        }
-        System.out.println("OUT STUDENT LOOP");
-        for(int i=0;i<strStudentsIds.length;i++){
-            userStudentsIds[i]=customUserDetailsService.loadUserBy_id(strStudentsIds[i]);
-        }
-            this.course.setTeachers(userTeachers);
-            this.course.setStudents(userStudents);
-            this.course.setStudentIds(userStudentsIds);
-
-
-        }
         this.success = success;
         this.code = code;
-        this.course.setOwner(classroom.getOwner());
-        this.course.set_id(classroom.get_id());
-        this.course.setName(classroom.getName());
-        this.course.setDescription(classroom.getDescription());
-        this.course.setSlug(classroom.getSlug());
-        this.course.setJoinId(classroom.getJoinId());
-        this.course.setCreatedAt(classroom.getCreatedAt());
-        this.course.setUpdateAt(classroom.getUpdateAt());
+        this.course=classroom;
 
     }
 
+    public ClassroomRespone getCourse() {
+        return course;
+    }
 
     public String[] getTeachers() {
         return teachers;
@@ -140,14 +95,10 @@ public class ApiClassroomResponse {
         this.code = code;
     }
 
-    public ClassroomRespone getCourse() {
-        return course;
-    }
 
     public void setCourse(ClassroomRespone course) {
         this.course = course;
     }
-
 
     public String getDescription() {
         return description;

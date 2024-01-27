@@ -1,19 +1,18 @@
 package com.example.springsocial.model;
 
+import org.springframework.stereotype.Repository;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Objects;
 
-
+@Repository
 public class ClassroomRespone<T> {
 
     private Long id;
-
-
     private String _id;
-
     private T[] teachers;
     private T[] students;
     private String name;
@@ -21,13 +20,13 @@ public class ClassroomRespone<T> {
     private LocalDate created_at;
     private LocalDate update_at;
     private String slug;
-    private String owner;
+    private T[] owner;
     private String join_id;
 
     private String[] assignments;
     private T[] studentIds;
 
-
+    //design pattern :template method
     public T[] getTeachers() {
         return teachers;
     }
@@ -51,28 +50,7 @@ public class ClassroomRespone<T> {
     public void setStudentIds(T[] studentIds) {
         this.studentIds = studentIds;
     }
-//    public String[] getTeachers() {
-//        return teachers;
-//    }
-//
-//    public void setTeachers(String[] teachers,String type) {
-//        if(Objects.equals(type, "create")){
-//            this.teachers = teachers;
-//        }
-//        else if(Objects.equals(type,"update")){
-//            this.teachers = teachers;
-//        }
-//    }
-//
-//    public String[] getStudents() {
-//        return students;
-//    }
-//
-//    public void setStudents(String[] students,String type   ) {
-//
-//        this.students = students;
-//
-//    }
+
 
     public String getName() {
         return name;
@@ -114,11 +92,11 @@ public class ClassroomRespone<T> {
         this.slug = slug;
     }
 
-    public String getOwner() {
+    public T[] getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(T[] owner) {
         this.owner = owner;
     }
 
