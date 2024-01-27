@@ -1,6 +1,9 @@
 package com.example.springsocial.controller;
 
 import com.example.springsocial.model.Classroom;
+import com.example.springsocial.security.CustomCourseDetailsService;
+import com.example.springsocial.util.ConvertStringToArrayList;
+import com.example.springsocial.util.StringToTextArrayPosgre;
 import com.example.springsocial.model.User;
 import com.example.springsocial.payload.ApiResponse;
 import com.example.springsocial.payload.AuthResponse;
@@ -10,8 +13,10 @@ import com.example.springsocial.payload.ApiClassroomResponse;
 import com.example.springsocial.repository.ClassroomRepository;
 import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.CustomUserDetailsService;
+import com.example.springsocial.util.StringToTextArrayPosgre;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +30,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 @RestController
@@ -36,6 +43,13 @@ public class ClassroomController {
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private ClassroomRepository classroomRepository;
+    @Autowired
+    private StringToTextArrayPosgre stringToTextArrayPosgre;
+    @Autowired
+    private CustomCourseDetailsService customCourseDetailsService;
+    @Autowired
+    private ConvertStringToArrayList convertStringToArrayList;
+
     private static void printVariableType(Object variable) {
         // Get the runtime type of the variable
         Class<?> variableType = variable.getClass();
@@ -43,44 +57,65 @@ public class ClassroomController {
         // Print the variable type
         System.out.println("Variable type: " + variableType.getName());
     }
+
     @PostMapping("/store")
     public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest) {
 
-        String randomCode = RandomString.make(8);
+        String randomCodeJoinId = RandomString.make(8);
+        String randomCodeIdClass = RandomString.make(24);
         LocalDate currentTime = LocalDate.now();
-        String[] teachers_id= new String[classroomRequest.getTeachers().length];
-        String[] students_id= new String[classroomRequest.getStudents().length];
+        ArrayList<String> teachers_id = new ArrayList<String>(classroomRequest.getTeachers().length);
+        ArrayList<String> students_id = new ArrayList<String>(classroomRequest.getStudents().length);
+
         Classroom classroom = new Classroom();
-
-
+        classroom.set_id(randomCodeIdClass);
         classroom.setName(classroomRequest.getName());
         classroom.setDescription(classroomRequest.getDescription());
-        classroom.setJoinId(randomCode);
+        classroom.setJoinId(randomCodeJoinId);
         classroom.setCreatedAt(currentTime);
         classroom.setUpdateAt(currentTime);
-        for(int i = 0; i < classroomRequest.getTeachers().length; i++) {
-            classroom.setTeachers(classroomRequest.getTeachers()[i]);
-            printVariableType(teachers_id[i]);
+        classroom.setSlug(classroomRequest.getName().toLowerCase());
+        for (int i = 0; i < classroomRequest.getTeachers().length; i++) {
+            teachers_id.add(classroomRequest.getTeachers()[i]);
         }
-        for(int i = 0; i < classroomRequest.getStudents().length; i++) {
-            students_id[i] =(String)  classroomRequest.getStudents()[i];
-            printVariableType(students_id[i]);
+        for (int i = 0; i < classroomRequest.getStudents().length; i++) {
+            students_id.add(classroomRequest.getStudents()[i]);
         }
+        String[] teachersToString = teachers_id.toString().substring(1, teachers_id.toString().length() - 1).split(", ");
+        String[] studentsToString = students_id.toString().substring(1, students_id.toString().length() - 1).split(", ");
 
 
-        classroom.setTeachers(classroomRequest.getTeachers());
-        classroom.setStudents(classroomRequest.getStudents());
+        classroom.setTeachers(stringToTextArrayPosgre.convert(teachersToString));
+        classroom.setStudents(stringToTextArrayPosgre.convert(studentsToString));
         classroom.setOwner(classroomRequest.getOwner());
 
+
         Classroom result = classroomRepository.save(classroom);
+
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .buildAndExpand(result.get_id()).toUri();
 
         return ResponseEntity.created(location)
-                .body(new ApiClassroomResponse(true, 200,result));
+                .body(new ApiClassroomResponse(true, 200, result,"create"));
 
+    }
+
+    @GetMapping(params="slug")
+    public ResponseEntity<ApiClassroomResponse> showOneClassroom(@RequestParam(value = "slug", defaultValue = "") String slug) {
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiClassroomResponse(false, 200, null,"show"));
+        }
+        else{
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .buildAndExpand(classroom.get_id()).toUri();
+
+            return ResponseEntity.created(location)
+                    .body(new ApiClassroomResponse(true, 200, classroom,"show"));
+        }
     }
 
     @GetMapping("/test")

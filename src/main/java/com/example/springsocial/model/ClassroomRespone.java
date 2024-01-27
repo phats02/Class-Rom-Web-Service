@@ -4,62 +4,74 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Objects;
 
-@Entity
-@Table(name = "courses", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "_id")
-})
-public class Classroom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+
+public class ClassroomRespone {
+
     private Long id;
-    @Column(name = "_id")
     private String _id;
-    @Column(name="teachers")
-    private String teachers;
-    @Column(name="students")
-    private String students;
-    @Column(name="name")
+    private String[] teachers;
+    private String[] students;
     private String name;
-    @Column(name="description")
     private String description;
-    @Column(name="created_at")
     private LocalDate created_at;
-    @Column(name="update_at")
     private LocalDate update_at;
-    @Column(name="slug")
     private String slug;
-    @Column(name="owner")
     private String owner;
-    @Column (name="join_id")
     private String join_id;
 
-    private String assignments;
-    private String studentIds;
+    private String[] assignments;
+    private String[] studentIds;
 
-    public String getStudentsIds() {
+    private User[] teacher_arr;
+    private User[] student_arr;
+
+    public User[] getTeacher_arr() {
+        return teacher_arr;
+    }
+
+    public void setTeacher_arr(User[] teacher_arr) {
+        this.teacher_arr = teacher_arr;
+    }
+
+    public User[] getStudent_arr() {
+        return student_arr;
+    }
+
+    public void setStudent_arr(User[] student_arr) {
+        this.student_arr = student_arr;
+    }
+
+    public String[] getStudentsIds() {
         return studentIds;
     }
 
-    public void setStudentsIds(String studentIds) {
+    public void setStudentsIds(String[] studentIds) {
         this.studentIds = studentIds;
     }
 
-    public String getTeachers() {
+    public String[] getTeachers() {
         return teachers;
     }
 
-    public void setTeachers(String teachers) {
-        this.teachers = teachers;
+    public void setTeachers(String[] teachers,String type) {
+        if(Objects.equals(type, "create")){
+            this.teachers = teachers;
+        }
+        else if(Objects.equals(type,"update")){
+            this.teachers = teachers;
+        }
     }
 
-    public String getStudents() {
+    public String[] getStudents() {
         return students;
     }
 
-    public void setStudents(String students) {
+    public void setStudents(String[] students,String type   ) {
+
         this.students = students;
+
     }
 
     public String getName() {
@@ -118,11 +130,11 @@ public class Classroom {
         this.join_id = joinId;
     }
 
-    public String getAssignments() {
+    public String[] getAssignments() {
         return assignments;
     }
 
-    public void setAssignments(String assignments) {
+    public void setAssignments(String[] assignments) {
         this.assignments = assignments;
     }
 
