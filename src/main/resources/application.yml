@@ -58,6 +58,13 @@ spring:
               scope:
                 - user:email
                 - read:user
+#            local:
+#              clientId: local
+#              clientSecret: local
+#              redirectUri: "{baseUrl}/oauth2/callback/{providerId}"
+#              scope:
+#                - email
+#                - profile
           provider:
             facebook:
               authorizationUri: https://www.facebook.com/v3.0/dialog/oauth

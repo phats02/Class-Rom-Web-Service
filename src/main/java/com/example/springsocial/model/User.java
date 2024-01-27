@@ -56,7 +56,12 @@ public class User {
     @Column(name="forgot_password_code")
     private String forgot_password_code;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
 
+
+    private String providerId;
 
     public Long getId() {
         return id;
@@ -164,4 +169,19 @@ public class User {
     }
 
 
+    public AuthProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
 }

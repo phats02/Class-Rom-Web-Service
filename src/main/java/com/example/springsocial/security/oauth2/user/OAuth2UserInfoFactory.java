@@ -6,7 +6,7 @@ import com.example.springsocial.model.AuthProvider;
 import java.util.Map;
 
 public class OAuth2UserInfoFactory {
-
+    //design pattern: factory pattern
     public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
         if(registrationId.equalsIgnoreCase(AuthProvider.google.toString())) {
             return new GoogleOAuth2UserInfo(attributes);

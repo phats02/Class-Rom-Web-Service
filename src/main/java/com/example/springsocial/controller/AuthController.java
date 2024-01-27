@@ -64,8 +64,17 @@ public class AuthController {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    @Autowired
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, TokenProvider tokenProvider, JavaMailSender mailSender, CustomUserDetailsService customUserDetailsService) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
+        this.mailSender = mailSender;
+        this.customUserDetailsService = customUserDetailsService;
+    }
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         User user = customUserDetailsService.loadUserByEmail(loginRequest.getEmail());
 
         if (user != null) {
@@ -77,12 +86,12 @@ public class AuthController {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = tokenProvider.createToken(authentication);
-
             AuthResponse authResponse = new AuthResponse(200, true, user, token);
             return ResponseEntity.ok(authResponse);
         } else {
-            ApiResponse apiResponse = new ApiResponse(200, false, "Incorrect email or password");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+
+            AuthResponse authResponse = new AuthResponse(200, false, user, null);
+            return ResponseEntity.ok(authResponse);
         }
     }
 
@@ -103,6 +112,7 @@ public class AuthController {
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(signUpRequest.getPassword());
+        user.setProvider(AuthProvider.local);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         //Generate random verification code
         String randomCode = RandomString.make(64);
