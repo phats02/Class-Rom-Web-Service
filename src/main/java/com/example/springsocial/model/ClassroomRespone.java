@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 
-public class ClassroomRespone {
+public class ClassroomRespone<T> {
 
     private Long id;
+
+
     private String _id;
-    private String[] teachers;
-    private String[] students;
+
+    private T[] teachers;
+    private T[] students;
     private String name;
     private String description;
     private LocalDate created_at;
@@ -22,57 +25,54 @@ public class ClassroomRespone {
     private String join_id;
 
     private String[] assignments;
-    private String[] studentIds;
+    private T[] studentIds;
 
-    private User[] teacher_arr;
-    private User[] student_arr;
 
-    public User[] getTeacher_arr() {
-        return teacher_arr;
-    }
-
-    public void setTeacher_arr(User[] teacher_arr) {
-        this.teacher_arr = teacher_arr;
-    }
-
-    public User[] getStudent_arr() {
-        return student_arr;
-    }
-
-    public void setStudent_arr(User[] student_arr) {
-        this.student_arr = student_arr;
-    }
-
-    public String[] getStudentsIds() {
-        return studentIds;
-    }
-
-    public void setStudentsIds(String[] studentIds) {
-        this.studentIds = studentIds;
-    }
-
-    public String[] getTeachers() {
+    public T[] getTeachers() {
         return teachers;
     }
 
-    public void setTeachers(String[] teachers,String type) {
-        if(Objects.equals(type, "create")){
-            this.teachers = teachers;
-        }
-        else if(Objects.equals(type,"update")){
-            this.teachers = teachers;
-        }
+    public void setTeachers(T[] teachers) {
+        this.teachers = teachers;
     }
 
-    public String[] getStudents() {
+    public T[] getStudents() {
         return students;
     }
 
-    public void setStudents(String[] students,String type   ) {
-
+    public void setStudents(T[] students) {
         this.students = students;
-
     }
+
+    public T[] getStudentIds() {
+        return studentIds;
+    }
+
+    public void setStudentIds(T[] studentIds) {
+        this.studentIds = studentIds;
+    }
+//    public String[] getTeachers() {
+//        return teachers;
+//    }
+//
+//    public void setTeachers(String[] teachers,String type) {
+//        if(Objects.equals(type, "create")){
+//            this.teachers = teachers;
+//        }
+//        else if(Objects.equals(type,"update")){
+//            this.teachers = teachers;
+//        }
+//    }
+//
+//    public String[] getStudents() {
+//        return students;
+//    }
+//
+//    public void setStudents(String[] students,String type   ) {
+//
+//        this.students = students;
+//
+//    }
 
     public String getName() {
         return name;

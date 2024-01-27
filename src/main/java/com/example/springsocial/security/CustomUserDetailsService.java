@@ -62,9 +62,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user=userRepository.findByEmail(email).orElse(null);
         return user;
     }
-    public User loadUserByIdV2(String id) {
-
-        User user=userRepository.findBy_id(id).orElse(null);
+    @Transactional
+    public User loadUserBy_id(String _id) {
+        User user=userRepository.findBy_id(_id).orElseThrow(()
+                -> new ResourceNotFoundException("users", "_id", _id));
         return user;
     }
 

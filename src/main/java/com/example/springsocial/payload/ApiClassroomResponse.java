@@ -1,4 +1,5 @@
 package com.example.springsocial.payload;
+
 import com.example.springsocial.model.Classroom;
 import com.example.springsocial.model.ClassroomRespone;
 import com.example.springsocial.model.User;
@@ -12,68 +13,99 @@ import java.util.Objects;
 
 public class ApiClassroomResponse {
 
+//    @Autowired
     private boolean success;
+//    @Autowired
     private int code;
-    private ClassroomRespone course=new ClassroomRespone();
+//    @Autowired
+    private ClassroomRespone course = new ClassroomRespone();
+//    @Autowired
     private String[] teachers;
+//    @Autowired
     private String[] students;
+//    @Autowired
     private String description;
+//    @Autowired
     private String name;
-
-
+//    @Autowired
     private String owner;
+//    @Autowired
     private String joinId;
+//    @Autowired
     private String[] assignments;
+//    @Autowired
     private String[] studentsIds;
+//    @Autowired
     private String _id;
+//    @Autowired
     private LocalDate created_at;
+//    @Autowired
     private LocalDate update_at;
+//    @Autowired
     private String slug;
+    @Autowired
+    private ConvertStringToArrayList convertStringToArrayList=new ConvertStringToArrayList();
 
     @Autowired
-    private ConvertStringToArrayList convertStringToArrayList;
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private CustomUserDetailsService customUserDetailsService=new CustomUserDetailsService();
 
 
-public ApiClassroomResponse(boolean success, int code, Classroom classroom,String type) {
-    if(Objects.equals(type, "create")){
-        this.course.setAssignments(classroom.getAssignments() != null
-                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
-                : new String[0]);
-        this.course.setStudents(classroom.getStudents() != null
+    public ApiClassroomResponse(boolean success, int code, Classroom classroom, String type) {
+        String[] strStutdents = classroom.getStudents() != null
                 ? convertStringToArrayList.convertToArrayList(classroom.getStudents()).toArray(new String[0])
-                : new String[0],type);
-        this.course.setStudentsIds(classroom.getStudentsIds() != null
-                ? convertStringToArrayList.convertToArrayList(classroom.getStudentsIds()).toArray(new String[0])
-                : new String[0]);
-        this.course.setTeachers(classroom.getTeachers() != null
+                : new String[0];
+        String[] strTeachers = classroom.getTeachers() != null
                 ? convertStringToArrayList.convertToArrayList(classroom.getTeachers()).toArray(new String[0])
-                : new String[0],type);
+                : new String[0];
+        String[] strAssignments = classroom.getAssignments() != null
+                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
+                : new String[0];
+        String[] strStudentsIds = classroom.getStudentsIds() != null
+                ? convertStringToArrayList.convertToArrayList(classroom.getStudentsIds()).toArray(new String[0])
+                : new String[0];
+        if (Objects.equals(type, "create")) {
+            this.course.setAssignments(strAssignments);
+            this.course.setStudents(strStutdents);
+            this.course.setStudentIds(strStudentsIds);
+            this.course.setTeachers(strTeachers);
+
+        } else if (Objects.equals(type, "show")) {
+            User[] userTeachers = new User[strTeachers.length];
+            User[] userStudents = new User[strStutdents.length];
+            User[] userStudentsIds = new User[strStudentsIds.length];
+        for(int i=0;i<strTeachers.length;i++){
+            System.out.println("LENGTH"+strTeachers.length);
+            System.out.println("TEACHER"+strTeachers[i]);
+            System.out.println(customUserDetailsService.loadUserById(6L));
+            userTeachers[i]=customUserDetailsService.loadUserBy_id(strTeachers[i]);
+        }
+        System.out.println("OUT TEACHER LOOP");
+        for(int i=0;i<strStutdents.length;i++){
+            System.out.println("STUDENT"+strStutdents[i]);
+            userStudents[i]=customUserDetailsService.loadUserBy_id(strStutdents[i]);
+        }
+        System.out.println("OUT STUDENT LOOP");
+        for(int i=0;i<strStudentsIds.length;i++){
+            userStudentsIds[i]=customUserDetailsService.loadUserBy_id(strStudentsIds[i]);
+        }
+            this.course.setTeachers(userTeachers);
+            this.course.setStudents(userStudents);
+            this.course.setStudentIds(userStudentsIds);
+
+
+        }
+        this.success = success;
+        this.code = code;
+        this.course.setOwner(classroom.getOwner());
+        this.course.set_id(classroom.get_id());
+        this.course.setName(classroom.getName());
+        this.course.setDescription(classroom.getDescription());
+        this.course.setSlug(classroom.getSlug());
+        this.course.setJoinId(classroom.getJoinId());
+        this.course.setCreatedAt(classroom.getCreatedAt());
+        this.course.setUpdateAt(classroom.getUpdateAt());
 
     }
-    else if(Objects.equals(type,type)){
-
-        this.course.setTeachers(teachers,type);
-        this.course.setStudents(students,type);
-
-
-
-    }
-    this.success = success;
-    this.code = code;
-    this.course.setOwner(classroom.getOwner());
-    this.course.set_id(classroom.get_id());
-    this.course.setName(classroom.getName());
-    this.course.setDescription(classroom.getDescription());
-    this.course.setSlug(classroom.getSlug());
-    this.course.setJoinId(classroom.getJoinId());
-    this.course.setCreatedAt(classroom.getCreatedAt());
-    this.course.setUpdateAt(classroom.getUpdateAt());
-
-}
-
-
 
 
     public String[] getTeachers() {
@@ -91,6 +123,7 @@ public ApiClassroomResponse(boolean success, int code, Classroom classroom,Strin
     public void setStudents(String[] students) {
         this.students = students;
     }
+
     public boolean isSuccess() {
         return success;
     }
@@ -114,7 +147,6 @@ public ApiClassroomResponse(boolean success, int code, Classroom classroom,Strin
     public void setCourse(ClassroomRespone course) {
         this.course = course;
     }
-
 
 
     public String getDescription() {
