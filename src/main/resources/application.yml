@@ -1,75 +1,75 @@
 spring:
-    mail:
-      host: smtp.gmail.com
-      port: 587
-      username: ggclassroom2324@gmail.com.com
-      password: bbscdrwfniqfdkpc
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
-            ssl:
-              trust: smtp.gmail.com
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ggclassroom2324@gmail.com.com
+    password: bbscdrwfniqfdkpc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
 
 
-    datasource:
-        url: jdbc:postgresql://ep-rough-poetry-96578134.ap-southeast-1.aws.neon.tech/grade_class?user=dev&password=yWPQNt2blSA8&sslmode=require
-        #url: jdbc:mongodb+srv://bphm82:cZWwvX7nEw7xc40B@cluster0.h6muiik.mongodb.net/?retryWrites=true&w=majority
-        username: root
-        password: callicoder
+  datasource:
+    url: jdbc:postgresql://ep-rough-poetry-96578134.ap-southeast-1.aws.neon.tech/grade_class?user=dev&password=yWPQNt2blSA8&sslmode=require
+    #url: jdbc:mongodb+srv://bphm82:cZWwvX7nEw7xc40B@cluster0.h6muiik.mongodb.net/?retryWrites=true&w=majority
+    username: root
+    password: callicoder
 
-    jpa:
-        show-sql: true
-        hibernate:
-            ddl-auto: update
-            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-            jdbc:
-              lob:
-                non_contextual_creation: true
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      jdbc:
+        lob:
+          non_contextual_creation: true
 
 
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    security:
-      oauth2:
-        client:
-          registration:
-            google:
-              clientId: 279764870303-n462jkjol79vr881rfic53dhpa9tplka.apps.googleusercontent.com
-              clientSecret: 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
-              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
-              scope:
-                - email
-                - profile
-            facebook:
-              clientId: 121189305185277
-              clientSecret: 42ffe5aa7379e8326387e0fe16f34132
-              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
-              scope:
-                - email
-                - public_profile
-            github:
-              clientId: d3e47fc2ddd966fa4352
-              clientSecret: 3bc0f6b8332f93076354c2a5bada2f5a05aea60d
-              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
-              scope:
-                - user:email
-                - read:user
-#            local:
-#              clientId: local
-#              clientSecret: local
-#              redirectUri: "{baseUrl}/oauth2/callback/{providerId}"
-#              scope:
-#                - email
-#                - profile
-          provider:
-            facebook:
-              authorizationUri: https://www.facebook.com/v3.0/dialog/oauth
-              tokenUri: https://graph.facebook.com/v3.0/oauth/access_token
-              userInfoUri: https://graph.facebook.com/v3.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 279764870303-n462jkjol79vr881rfic53dhpa9tplka.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+          facebook:
+            clientId: 121189305185277
+            clientSecret: 42ffe5aa7379e8326387e0fe16f34132
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - public_profile
+          github:
+            clientId: d3e47fc2ddd966fa4352
+            clientSecret: 3bc0f6b8332f93076354c2a5bada2f5a05aea60d
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - user:email
+              - read:user
+        #            local:
+        #              clientId: local
+        #              clientSecret: local
+        #              redirectUri: "{baseUrl}/oauth2/callback/{providerId}"
+        #              scope:
+        #                - email
+        #                - profile
+        provider:
+          facebook:
+            authorizationUri: https://www.facebook.com/v3.0/dialog/oauth
+            tokenUri: https://graph.facebook.com/v3.0/oauth/access_token
+            userInfoUri: https://graph.facebook.com/v3.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
 
 app:
   auth:

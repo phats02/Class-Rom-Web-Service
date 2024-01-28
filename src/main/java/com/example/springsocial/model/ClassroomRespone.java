@@ -26,7 +26,7 @@ public class ClassroomRespone<T> {
     private String[] assignments;
     private T[] studentIds;
 
-    //design pattern :template method
+
     public T[] getTeachers() {
         return teachers;
     }

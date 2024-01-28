@@ -1,6 +1,7 @@
 package com.example.springsocial.controller;
 
 import com.example.springsocial.security.CustomUserDetailsService;
+import com.example.springsocial.util.RandomStringSingleton;
 import com.example.springsocial.util.UrlUtils;
 import com.example.springsocial.exception.BadRequestException;
 import com.example.springsocial.model.AuthProvider;
@@ -13,6 +14,7 @@ import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -74,7 +76,7 @@ public class AuthController {
         this.customUserDetailsService = customUserDetailsService;
     }
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         User user = customUserDetailsService.loadUserByEmail(loginRequest.getEmail());
 
         if (user != null) {
@@ -87,7 +89,9 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = tokenProvider.createToken(authentication);
             AuthResponse authResponse = new AuthResponse(200, true, user, token);
-            return ResponseEntity.ok(authResponse);
+
+//            return ResponseEntity.ok(authResponse).header();
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,token).body(authResponse);
         } else {
 
             AuthResponse authResponse = new AuthResponse(200, false, user, null);
@@ -105,8 +109,8 @@ public class AuthController {
         LocalDate currentTime = LocalDate.now();
         // Creating user's account
         User user = new User();
-
-        String IDrandomCode = RandomString.make(24);
+        //design pattern  singleton
+        String IDrandomCode = RandomStringSingleton.getInstance(24).make();
         user.set_id(IDrandomCode);
         user.setCreatedAt(currentTime);
         user.setName(signUpRequest.getName());
@@ -224,6 +228,11 @@ public class AuthController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @GetMapping("/google/token")
+    public ResponseEntity<?> socialLogin(@RequestParam("code") String code) {
+        System.out.println("code: " + code);
+        return ResponseEntity.ok(code);
+    }
     @GetMapping("/health")
     public String getHealth() {
         System.out.println(System.getenv("DDEV_CLIENT_HOST"));

@@ -6,6 +6,7 @@ import com.example.springsocial.security.CurrentUser;
 import com.example.springsocial.security.CustomCourseDetailsService;
 import com.example.springsocial.security.UserPrincipal;
 import com.example.springsocial.util.ConvertStringToArrayList;
+import com.example.springsocial.util.RandomStringSingleton;
 import com.example.springsocial.util.StringToTextArrayPosgre;
 import com.example.springsocial.model.User;
 import com.example.springsocial.payload.ApiResponse;
@@ -42,10 +43,13 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/courses")
 public class ClassroomController {
+    //design pattern spring singleton
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+    //design pattern spring singleton
+
     @Autowired
     private ClassroomRepository classroomRepository;
     @Autowired
@@ -140,9 +144,10 @@ public class ClassroomController {
 
     @PostMapping("/store")
     public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest) {
+        //design pattern  singleton
 
-        String randomCodeJoinId = RandomString.make(8);
-        String randomCodeIdClass = RandomString.make(24);
+        String randomCodeJoinId = RandomStringSingleton.getInstance(8).make();;
+        String randomCodeIdClass =RandomStringSingleton.getInstance(24).make();;
         LocalDate currentTime = LocalDate.now();
         ArrayList<String> teachers_id = new ArrayList<String>(classroomRequest.getTeachers().length);
         ArrayList<String> students_id = new ArrayList<String>(classroomRequest.getStudents().length);
@@ -207,8 +212,8 @@ public class ClassroomController {
 
     }
 
-    @GetMapping(params = "slug")
-    public ResponseEntity<?> showOneClassroom(@RequestParam(value = "slug", defaultValue = "") String slug) {
+    @GetMapping("/{slug}")
+    public ResponseEntity<?> showOneClassroom( @PathVariable String slug) {
         Classroom classroom = classroomRepository.findBySlug(slug);
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "No class found"));

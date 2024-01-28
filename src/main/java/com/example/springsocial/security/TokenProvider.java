@@ -2,9 +2,11 @@ package com.example.springsocial.security;
 
 import com.example.springsocial.config.AppProperties;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -33,6 +35,8 @@ public class TokenProvider {
                 .signWith(SignatureAlgorithm.HS512, appProperties.getAuth().getTokenSecret())
                 .compact();
     }
+
+
 
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
