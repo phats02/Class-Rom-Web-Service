@@ -31,4 +31,10 @@ public class CustomCourseDetailsService implements UserDetailsService {
 
         return classroom;
     }
+    @Transactional
+    public Classroom[] loadCoursesByOwner(String Email){
+        Classroom[] courses=classroomRepository.findByOwner(Email);
+
+        return courses;
+    }
 }

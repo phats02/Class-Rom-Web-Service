@@ -15,4 +15,5 @@ import java.util.Optional;
 public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
     Optional<Classroom> findBy_id(String _id);
     Classroom findBySlug(String slug);
+    Classroom[] findByOwner(String owner);
 }

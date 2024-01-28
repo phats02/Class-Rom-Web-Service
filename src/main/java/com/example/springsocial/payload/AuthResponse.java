@@ -5,7 +5,7 @@ import com.example.springsocial.model.User;
 public class AuthResponse {
     private String jwt;
     private int code ;
-    private String tokenType="Bearer";
+    private String tokenType="Bearer ";
     private String message = "";
     private boolean success;
     private User user;

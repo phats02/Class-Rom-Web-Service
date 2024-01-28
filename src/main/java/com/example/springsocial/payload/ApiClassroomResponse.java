@@ -26,6 +26,7 @@ public class ApiClassroomResponse {
     private int code;
     // @Autowired
     private ClassroomRespone course = new ClassroomRespone();
+    private ClassroomRespone[] courses;
     private String[] teachers;
     // @Autowired
     private String[] students;
@@ -50,12 +51,26 @@ public class ApiClassroomResponse {
     // @Autowired
     private String slug;
 
+    public ClassroomRespone[] getCourses() {
+        return courses;
+    }
+
+    public void setCourses(ClassroomRespone[] courses) {
+        this.courses = courses;
+    }
 
     public ApiClassroomResponse(boolean success, int code, ClassroomRespone classroom) {
 
         this.success = success;
         this.code = code;
         this.course=classroom;
+
+    }
+    public ApiClassroomResponse(boolean success, int code, ClassroomRespone[] classroom) {
+
+        this.success = success;
+        this.code = code;
+        this.courses=classroom;
 
     }
 
