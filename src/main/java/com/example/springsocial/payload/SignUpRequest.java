@@ -1,7 +1,11 @@
 package com.example.springsocial.payload;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * Created by rajeevkumarsingh on 02/08/17.
@@ -17,6 +21,53 @@ public class SignUpRequest {
 
     @NotBlank
     private String password;
+    @JsonFormat(pattern = "yyyy/MM/dd")
+
+    private LocalDate dob;
+    private  String role;
+    private LocalDate updateTime;
+    private long studentID;
+    private LocalDate createTime;
+
+    public LocalDate getDob() {
+        return dob;
+    }
+
+    public void setDob(LocalDate dob) {
+        this.dob = dob;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public LocalDate getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDate createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDate getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDate updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public long getStudentID() {
+        return studentID;
+    }
+
+    public void setStudentID(long studentID) {
+        this.studentID = studentID;
+    }
 
     public String getName() {
         return name;

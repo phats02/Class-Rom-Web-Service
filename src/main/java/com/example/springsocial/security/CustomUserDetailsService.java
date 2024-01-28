@@ -5,11 +5,14 @@ import com.example.springsocial.exception.ResourceNotFoundException;
 import com.example.springsocial.model.User;
 import com.example.springsocial.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 /**
  * Created by rajeevkumarsingh on 02/08/17.
@@ -36,9 +39,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(
-            () -> new ResourceNotFoundException("User", "id", id)
+                () -> new ResourceNotFoundException("User", "id", id)
         );
 
         return UserPrincipal.create(user);
     }
+
+    @Transactional
+    public User loadUserByVerificationCode(String code) {
+        User user = userRepository.findByVerificationCode(code).orElseThrow(
+                () -> new ResourceNotFoundException("users", "verification_code", code)
+        );
+
+        return user;
+    }
+
+
+
+
+
 }
