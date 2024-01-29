@@ -65,7 +65,8 @@ public class AuthController {
     private JavaMailSender mailSender;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
+    @Autowired
+    RandomStringSingleton randomStringSingleton = RandomStringSingleton.getInstance();
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, TokenProvider tokenProvider, JavaMailSender mailSender, CustomUserDetailsService customUserDetailsService) {
         this.authenticationManager = authenticationManager;
@@ -110,7 +111,7 @@ public class AuthController {
         // Creating user's account
         User user = new User();
         //design pattern  singleton
-        String IDrandomCode = RandomStringSingleton.getInstance(24).make();
+        String IDrandomCode = randomStringSingleton.generateRandomString(24);;
         user.set_id(IDrandomCode);
         user.setCreatedAt(currentTime);
         user.setName(signUpRequest.getName());

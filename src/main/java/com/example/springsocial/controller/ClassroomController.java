@@ -2,6 +2,9 @@ package com.example.springsocial.controller;
 
 import com.example.springsocial.model.Classroom;
 import com.example.springsocial.model.ClassroomRespone;
+import com.example.springsocial.model.Invitation;
+import com.example.springsocial.payload.*;
+import com.example.springsocial.repository.InvitationRepository;
 import com.example.springsocial.security.CurrentUser;
 import com.example.springsocial.security.CustomCourseDetailsService;
 import com.example.springsocial.security.UserPrincipal;
@@ -9,11 +12,6 @@ import com.example.springsocial.util.ConvertStringToArrayList;
 import com.example.springsocial.util.RandomStringSingleton;
 import com.example.springsocial.util.StringToTextArrayPosgre;
 import com.example.springsocial.model.User;
-import com.example.springsocial.payload.ApiResponse;
-import com.example.springsocial.payload.AuthResponse;
-import com.example.springsocial.payload.ClassroomRequest;
-import com.example.springsocial.payload.LoginRequest;
-import com.example.springsocial.payload.ApiClassroomResponse;
 import com.example.springsocial.repository.ClassroomRepository;
 import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.CustomUserDetailsService;
@@ -51,6 +49,8 @@ public class ClassroomController {
     //design pattern spring singleton
 
     @Autowired
+    private InvitationRepository invitationRepository;
+    @Autowired
     private ClassroomRepository classroomRepository;
     @Autowired
     private StringToTextArrayPosgre stringToTextArrayPosgre;
@@ -62,7 +62,11 @@ public class ClassroomController {
     private ClassroomRespone course = new ClassroomRespone();
 
     @Autowired
-    private ClassroomRespone[] courses=new ClassroomRespone[0];
+    private ClassroomRespone[] courses = new ClassroomRespone[0];
+
+    @Autowired
+    RandomStringSingleton randomStringSingleton = RandomStringSingleton.getInstance();
+    private static final String[] EmptyArrayString = {};
 
 
     private static void printVariableType(Object variable) {
@@ -141,54 +145,66 @@ public class ClassroomController {
     }
 
 
-
     @PostMapping("/store")
-    public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest) {
+    public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest,@CurrentUser UserPrincipal userPrincipal) {
         //design pattern  singleton
-
-        String randomCodeJoinId = RandomStringSingleton.getInstance(8).make();;
-        String randomCodeIdClass =RandomStringSingleton.getInstance(24).make();;
+        String randomInvitationId=randomStringSingleton.generateRandomString(24);;
+        String randomCodeInvitationCode=randomStringSingleton.generateRandomString(8);;
+        String randomCodeJoinId = randomStringSingleton.generateRandomString(8);;
+        String randomCodeIdClass =randomStringSingleton.generateRandomString(24);;
         LocalDate currentTime = LocalDate.now();
-        ArrayList<String> teachers_id = new ArrayList<String>(classroomRequest.getTeachers().length);
-        ArrayList<String> students_id = new ArrayList<String>(classroomRequest.getStudents().length);
 
         Classroom classroom = new Classroom();
+        Invitation invitation = new Invitation();
+
+
         classroom.set_id(randomCodeIdClass);
+
         classroom.setName(classroomRequest.getName());
+
         classroom.setDescription(classroomRequest.getDescription());
+
         classroom.setJoinId(randomCodeJoinId);
+
         classroom.setCreatedAt(currentTime);
+
         classroom.setUpdateAt(currentTime);
+
         classroom.setSlug(classroomRequest.getName().toLowerCase());
-        for (int i = 0; i < classroomRequest.getTeachers().length; i++) {
-            teachers_id.add(classroomRequest.getTeachers()[i]);
-        }
-        for (int i = 0; i < classroomRequest.getStudents().length; i++) {
-            students_id.add(classroomRequest.getStudents()[i]);
-        }
-        String[] teachersToString = teachers_id.toString().substring(1, teachers_id.toString().length() - 1).split(", ");
-        String[] studentsToString = students_id.toString().substring(1, students_id.toString().length() - 1).split(", ");
+
+        classroom.setOwner(userPrincipal.get_id());
 
 
-        classroom.setTeachers(stringToTextArrayPosgre.convert(teachersToString));
-        classroom.setStudents(stringToTextArrayPosgre.convert(studentsToString));
-        classroom.setOwner(classroomRequest.getOwner());
+
+
+            classroom.setTeachers(userPrincipal.get_id());
+
+
 
 
         Classroom result = classroomRepository.save(classroom);
 
-        String[] strStudents = classroom.getStudents() != null
+        invitation.set_id(randomInvitationId);
+        invitation.setCourseId(result.get_id());
+        invitation.setType(1);
+        invitation.setInviteCode(randomCodeInvitationCode);
+        invitation.setCreated_at(currentTime);
+        invitation.setUpdate_at(currentTime);
+        invitationRepository.save(invitation);
+
+
+        String[] strStudents = classroom.getStudents()!=null
                 ? convertStringToArrayList.convertToArrayList(classroom.getStudents()).toArray(new String[0])
-                : new String[0];
-        String[] strTeachers = classroom.getTeachers() != null
+                : null;
+        String[] strTeachers = classroom.getTeachers() !=null
                 ? convertStringToArrayList.convertToArrayList(classroom.getTeachers()).toArray(new String[0])
-                : new String[0];
-        String[] strAssignments = classroom.getAssignments() != null
+                : null;
+        String[] strAssignments = classroom.getAssignments() !=null
                 ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
-                : new String[0];
-        String[] strStudentsIds = classroom.getStudentsIds() != null
+                : null;
+        String[] strStudentsIds = classroom.getStudentsIds() !=null
                 ? convertStringToArrayList.convertToArrayList(classroom.getStudentsIds()).toArray(new String[0])
-                : new String[0];
+                : null;
 
         this.course.setAssignments(strAssignments);
         this.course.setStudents(strStudents);
@@ -210,40 +226,47 @@ public class ClassroomController {
         return ResponseEntity.created(location)
                 .body(new ApiClassroomResponse(true, 200, course));
 
+
+
     }
 
     @GetMapping("/{slug}")
-    public ResponseEntity<?> showOneClassroom( @PathVariable String slug) {
+    public ResponseEntity<?> showOneClassroom(@PathVariable String slug) {
         Classroom classroom = classroomRepository.findBySlug(slug);
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "No class found"));
         } else {
-            String[] strStudents = classroom.getStudents() != null
+            String[] strStudents = classroom.getStudents()!=null
                     ? convertStringToArrayList.convertToArrayList(classroom.getStudents()).toArray(new String[0])
                     : new String[0];
-            String[] strTeachers = classroom.getTeachers() != null
+            String[] strTeachers = classroom.getTeachers()!=null
                     ? convertStringToArrayList.convertToArrayList(classroom.getTeachers()).toArray(new String[0])
                     : new String[0];
-            String[] strAssignments = classroom.getAssignments() != null
+            String[] strAssignments = classroom.getAssignments() !=null
                     ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
                     : new String[0];
-            String[] strStudentsIds = classroom.getStudentsIds() != null
+            String[] strStudentsIds = classroom.getStudentsIds()!=null
                     ? convertStringToArrayList.convertToArrayList(classroom.getStudentsIds()).toArray(new String[0])
                     : new String[0];
             User[] userTeachers = new User[strTeachers.length];
             User[] userStudents = new User[strStudents.length];
             User[] userStudentsIds = new User[strStudentsIds.length];
+
             for (int i = 0; i < strTeachers.length; i++) {
                 userTeachers[i] = customUserDetailsService.loadUserBy_id(strTeachers[i]);
             }
+
             for (int i = 0; i < strStudents.length; i++) {
                 userStudents[i] = customUserDetailsService.loadUserBy_id(strStudents[i]);
             }
+
             for (int i = 0; i < strStudentsIds.length; i++) {
                 userStudentsIds[i] = customUserDetailsService.loadUserBy_id(strStudentsIds[i]);
             }
+
             this.course.setTeachers(userTeachers);
             this.course.setStudents(userStudents);
+
             this.course.setStudentIds(userStudentsIds);
             this.course.setOwner(userTeachers);
             this.course.set_id(classroom.get_id());
@@ -263,11 +286,22 @@ public class ClassroomController {
             return ResponseEntity.created(location)
                     .body(new ApiClassroomResponse(true, 200, course));
         }
+
+
+
     }
 
-    @GetMapping("/test")
-    public String getTest() {
 
-        return "worked!";
+    @GetMapping({"/{classId}/invitation"})
+    public ResponseEntity<?> ShowClassroomCode(@PathVariable String classId) {
+        Invitation invitation = invitationRepository.findByCourseId(classId);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .buildAndExpand(invitation.get_id()).toUri();
+        if (invitation == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "No class found"));
+        } else {
+            return ResponseEntity.created(location).body(new InvitationRespone(true, 200, invitation));
+        }
     }
 }
