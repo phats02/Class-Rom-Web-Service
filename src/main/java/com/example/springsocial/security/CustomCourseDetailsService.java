@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.util.ArrayUtils;
 
 import javax.transaction.Transactional;
 
@@ -24,7 +25,7 @@ public class CustomCourseDetailsService implements UserDetailsService {
     }
 
     @Transactional
-    public Classroom loadCoursesById(String id) {
+    public Classroom loadCourseById(String id) {
         Classroom classroom = classroomRepository.findBy_id(id).orElseThrow(
                 () -> new ResourceNotFoundException("courses", "_id", id)
         );
@@ -32,9 +33,17 @@ public class CustomCourseDetailsService implements UserDetailsService {
         return classroom;
     }
     @Transactional
-    public Classroom[] loadCoursesByOwner(String Email){
-        Classroom[] courses=classroomRepository.findByOwner(Email);
+    public Classroom[] loadCoursesByOwner(String teachers){
+        Classroom[] courses=classroomRepository.findByTeachers(teachers);
+
+        return courses;
+
+    }
+    @Transactional
+    public Classroom[] loadCoursesByStudent(String students){
+        Classroom[] courses=classroomRepository.findByStudents(students);
 
         return courses;
     }
+
 }

@@ -14,4 +14,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 
     Invitation findByCourseId(String courseId);
 
+    Invitation findByInviteCode(String inviteCode);
+
 }
