@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Objects;
-public class ApiClassroomResponse {
+public class ApiClassroomResponse<T> {
 
     // @Autowired
     private boolean success;
@@ -35,7 +35,7 @@ public class ApiClassroomResponse {
     // @Autowired
     private String name;
     // @Autowired
-    private String owner;
+    private T owner;
     // @Autowired
     private String joinId;
     // @Autowired
@@ -123,11 +123,11 @@ public class ApiClassroomResponse {
         this.description = description;
     }
 
-    public String getOwner() {
+    public T getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(T owner) {
         this.owner = owner;
     }
 

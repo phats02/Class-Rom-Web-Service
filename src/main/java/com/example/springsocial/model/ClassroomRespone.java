@@ -20,7 +20,7 @@ public class ClassroomRespone<T> {
     private LocalDate created_at;
     private LocalDate update_at;
     private String slug;
-    private String owner;
+    private T owner;
     private String join_id;
 
     private String[] assignments;
@@ -92,11 +92,11 @@ public class ClassroomRespone<T> {
         this.slug = slug;
     }
 
-    public String getOwner() {
+    public T getOwner() {
         return owner;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(T owner) {
         this.owner = owner;
     }
 

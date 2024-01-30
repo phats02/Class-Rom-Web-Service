@@ -46,7 +46,6 @@ public class ClassroomController {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
     //design pattern spring singleton
-
     @Autowired
     private InvitationRepository invitationRepository;
     @Autowired
@@ -93,22 +92,20 @@ public class ClassroomController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAllClassroomByOwner(@CurrentUser UserPrincipal userPrincipal) {
         Classroom[] classroom1 = new Classroom[100];
-        Classroom[] classroom2=new Classroom[100];
+        Classroom[] classroom2 = new Classroom[100];
         List<Classroom> allClassroom = classroomRepository.findAll();
-        int student_length=0,teacher_length=0;
+        int student_length = 0, teacher_length = 0;
         for (int i = 0; i < allClassroom.size(); i++) {
 
-            if (allClassroom.get(i).getStudents()==null) {
+            if (allClassroom.get(i).getStudents() == null) {
                 continue;
-            }
-            else{
+            } else {
                 String[] splitStr = allClassroom.get(i).getStudents().split(",");
                 for (int j = 0; j < splitStr.length; j++) {
                     if (splitStr[j].equals(userPrincipal.get_id())) {
-                        classroom2[student_length]=allClassroom.get(i);
+                        classroom2[student_length] = allClassroom.get(i);
                         student_length++;
                         break;
                     }
@@ -116,15 +113,14 @@ public class ClassroomController {
             }
         }
 
-        for(int i=0;i<allClassroom.size();i++){
-            if(allClassroom.get(i).getTeachers()==null){
+        for (int i = 0; i < allClassroom.size(); i++) {
+            if (allClassroom.get(i).getTeachers() == null) {
                 continue;
-            }
-            else{
+            } else {
                 String[] splitStr = allClassroom.get(i).getTeachers().split(",");
                 for (int j = 0; j < splitStr.length; j++) {
                     if (splitStr[j].equals(userPrincipal.get_id())) {
-                        classroom1[teacher_length]=allClassroom.get(i);
+                        classroom1[teacher_length] = allClassroom.get(i);
                         teacher_length++;
                         break;
                     }
@@ -133,10 +129,9 @@ public class ClassroomController {
         }
 
 
-        Classroom[] classroom=new Classroom[teacher_length+student_length];
+        Classroom[] classroom = new Classroom[teacher_length + student_length];
         System.arraycopy(classroom1, 0, classroom, 0, teacher_length);
         System.arraycopy(classroom2, 0, classroom, teacher_length, student_length);
-
 
 
         if (classroom == null) {
@@ -159,7 +154,8 @@ public class ClassroomController {
                 String[] strStudentsIds = classroom[i].getStudentsIds() != null
                         ? convertStringToArrayList.convertToArrayList(classroom[i].getStudentsIds()).toArray(new String[0])
                         : new String[0];
-                this.courses[i].setOwner(classroom[i].getOwner());
+                this.courses[i].setOwner(customUserDetailsService.loadUserBy_id(classroom[i].getOwner()));
+
                 User[] userTeachers = new User[strTeachers.length];
                 User[] userStudentsIds = new User[strStudentsIds.length];
                 for (int j = 0; j < strTeachers.length; j++) {
@@ -183,6 +179,8 @@ public class ClassroomController {
                 this.courses[i].setUpdateAt(classroom[i].getUpdateAt());
                 this.courses[i].setAssignments(strAssignments);
             }
+
+
 
             return ResponseEntity.ok(new ApiClassroomResponse(true, 200, courses));
         }
