@@ -1,37 +1,23 @@
 package com.example.springsocial.model;
 
-import javax.persistence.*;
+import org.springframework.stereotype.Repository;
+
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "assignments", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "_id")
-})
-public class Assignment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-    @Column(name = "_id")
+@Repository
+public class AssignmentV2 {
+
     private String _id;
-    @Column(name = "created_at")
+
     private LocalDate created_at;
-    @Column(name = "updated_at")
+
     private LocalDate update_at;
-    @Column(name="name")
+
     private String name;
-    @Column(name="point")
+
     private float point;
-    @Column(name="grades")
+
     private User[] grades ;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String get_id() {
         return _id;
@@ -41,19 +27,19 @@ public class Assignment {
         this._id = _id;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDate getCreated_at() {
         return created_at;
     }
 
-    public void setCreatedAt(LocalDate created_at) {
+    public void setCreated_at(LocalDate created_at) {
         this.created_at = created_at;
     }
 
-    public LocalDate getUpdateAt() {
+    public LocalDate getUpdate_at() {
         return update_at;
     }
 
-    public void setUpdateAt(LocalDate update_at) {
+    public void setUpdate_at(LocalDate update_at) {
         this.update_at = update_at;
     }
 

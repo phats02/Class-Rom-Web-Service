@@ -2,14 +2,10 @@ package com.example.springsocial.model;
 
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Objects;
 
 @Repository
-public class ClassroomRespone<T> {
+public class ClassroomV2<T> {
 
     private Long id;
     private String _id;
@@ -23,7 +19,7 @@ public class ClassroomRespone<T> {
     private T owner;
     private String join_id;
 
-    private String[] assignments;
+    private T[] assignments;
     private T[] studentIds;
 
 
@@ -108,11 +104,11 @@ public class ClassroomRespone<T> {
         this.join_id = joinId;
     }
 
-    public String[] getAssignments() {
+    public T[] getAssignments() {
         return assignments;
     }
 
-    public void setAssignments(String[] assignments) {
+    public void setAssignments(T[] assignments) {
         this.assignments = assignments;
     }
 

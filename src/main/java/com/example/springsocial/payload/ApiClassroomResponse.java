@@ -1,23 +1,9 @@
 package com.example.springsocial.payload;
 
-import com.example.springsocial.model.Classroom;
-import com.example.springsocial.model.ClassroomRespone;
-import com.example.springsocial.model.User;
-
-import com.example.springsocial.repository.UserRepository;
-import com.example.springsocial.security.CustomUserDetailsService;
-import com.example.springsocial.util.ConvertStringToArrayList;
-import org.apache.tomcat.jni.Local;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+import com.example.springsocial.model.ClassroomV2;
 
 import java.time.LocalDate;
-import java.util.Objects;
+
 public class ApiClassroomResponse<T> {
 
     // @Autowired
@@ -25,8 +11,8 @@ public class ApiClassroomResponse<T> {
     // @Autowired
     private int code;
     // @Autowired
-    private ClassroomRespone course = new ClassroomRespone();
-    private ClassroomRespone[] courses;
+    private ClassroomV2 course = new ClassroomV2();
+    private ClassroomV2[] courses;
     private String[] teachers;
     // @Autowired
     private String[] students;
@@ -51,22 +37,22 @@ public class ApiClassroomResponse<T> {
     // @Autowired
     private String slug;
 
-    public ClassroomRespone[] getCourses() {
+    public ClassroomV2[] getCourses() {
         return courses;
     }
 
-    public void setCourses(ClassroomRespone[] courses) {
+    public void setCourses(ClassroomV2[] courses) {
         this.courses = courses;
     }
 
-    public ApiClassroomResponse(boolean success, int code, ClassroomRespone classroom) {
+    public ApiClassroomResponse(boolean success, int code, ClassroomV2 classroom) {
 
         this.success = success;
         this.code = code;
         this.course=classroom;
 
     }
-    public ApiClassroomResponse(boolean success, int code, ClassroomRespone[] classroom) {
+    public ApiClassroomResponse(boolean success, int code, ClassroomV2[] classroom) {
 
         this.success = success;
         this.code = code;
@@ -74,7 +60,7 @@ public class ApiClassroomResponse<T> {
 
     }
 
-    public ClassroomRespone getCourse() {
+    public ClassroomV2 getCourse() {
         return course;
     }
 
@@ -111,7 +97,7 @@ public class ApiClassroomResponse<T> {
     }
 
 
-    public void setCourse(ClassroomRespone course) {
+    public void setCourse(ClassroomV2 course) {
         this.course = course;
     }
 

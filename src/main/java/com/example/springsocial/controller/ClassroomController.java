@@ -1,31 +1,18 @@
 package com.example.springsocial.controller;
 
 import com.example.springsocial.exception.ResourceNotFoundException;
-import com.example.springsocial.model.Classroom;
-import com.example.springsocial.model.ClassroomRespone;
-import com.example.springsocial.model.Invitation;
+import com.example.springsocial.model.*;
 import com.example.springsocial.payload.*;
-import com.example.springsocial.repository.InvitationRepository;
+import com.example.springsocial.repository.*;
 import com.example.springsocial.security.CurrentUser;
 import com.example.springsocial.security.CustomCourseDetailsService;
 import com.example.springsocial.security.UserPrincipal;
 import com.example.springsocial.util.ConvertStringToArrayList;
 import com.example.springsocial.util.RandomStringSingleton;
 import com.example.springsocial.util.StringToTextArrayPosgre;
-import com.example.springsocial.model.User;
-import com.example.springsocial.repository.ClassroomRepository;
-import com.example.springsocial.repository.UserRepository;
 import com.example.springsocial.security.CustomUserDetailsService;
-import com.example.springsocial.util.StringToTextArrayPosgre;
-import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import com.example.springsocial.repository.UserRepository;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -51,16 +38,25 @@ public class ClassroomController {
     @Autowired
     private ClassroomRepository classroomRepository;
     @Autowired
+    private AssignmentRepository assignmentRepository;
+    @Autowired
+    private AssignmentV2Repository assignmentV2Repository;
+    @Autowired
     private StringToTextArrayPosgre stringToTextArrayPosgre;
     @Autowired
     private CustomCourseDetailsService customCourseDetailsService;
     @Autowired
     private ConvertStringToArrayList convertStringToArrayList;
     @Autowired
-    private ClassroomRespone course = new ClassroomRespone();
+    private ClassroomV2 course = new ClassroomV2();
 
     @Autowired
-    private ClassroomRespone[] courses = new ClassroomRespone[0];
+    private ClassroomV2[] courses = new ClassroomV2[0];
+    @Autowired
+    private AssignmentV2 assignmentRespone = new AssignmentV2();
+    @Autowired
+    private AssignmentV2[] assignmentRespones = new AssignmentV2[0];
+
 
     @Autowired
     RandomStringSingleton randomStringSingleton = RandomStringSingleton.getInstance();
@@ -75,19 +71,19 @@ public class ClassroomController {
         System.out.println("Variable type: " + variableType.getName());
     }
 
-    public ClassroomRespone getCourse() {
+    public ClassroomV2 getCourse() {
         return course;
     }
 
-    public void setCourse(ClassroomRespone course) {
+    public void setCourse(ClassroomV2 course) {
         this.course = course;
     }
 
-    public ClassroomRespone[] getCourses() {
+    public ClassroomV2[] getCourses() {
         return courses;
     }
 
-    public void setCourses(ClassroomRespone[] courses) {
+    public void setCourses(ClassroomV2[] courses) {
         this.courses = courses;
     }
 
@@ -137,9 +133,9 @@ public class ClassroomController {
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "No classroom found"));
         } else {
-            this.courses = new ClassroomRespone[classroom.length];
+            this.courses = new ClassroomV2[classroom.length];
             for (int i = 0; i < classroom.length; i++) {
-                this.courses[i] = new ClassroomRespone();
+                this.courses[i] = new ClassroomV2();
             }
             for (int i = 0; i < classroom.length; i++) {
                 String[] strStudents = classroom[i].getStudents() != null
@@ -158,6 +154,7 @@ public class ClassroomController {
 
                 User[] userTeachers = new User[strTeachers.length];
                 User[] userStudentsIds = new User[strStudentsIds.length];
+
                 for (int j = 0; j < strTeachers.length; j++) {
                     userTeachers[j] = customUserDetailsService.loadUserBy_id(strTeachers[j]);
 
@@ -166,6 +163,7 @@ public class ClassroomController {
                 for (int j = 0; j < strStudentsIds.length; j++) {
                     userStudentsIds[j] = customUserDetailsService.loadUserBy_id(strStudentsIds[j]);
                 }
+
 
                 this.courses[i].setTeachers(strTeachers);
                 this.courses[i].setStudents(strStudents);
@@ -248,7 +246,7 @@ public class ClassroomController {
                 ? convertStringToArrayList.convertToArrayList(classroom.getStudentsIds()).toArray(new String[0])
                 : null;
 
-        this.course.setAssignments(strAssignments);
+       this.course.setAssignments(strAssignments);
         this.course.setStudents(strStudents);
         this.course.setStudentIds(strStudentsIds);
         this.course.setTeachers(strTeachers);
@@ -317,7 +315,23 @@ public class ClassroomController {
             this.course.setJoinId(classroom.getJoinId());
             this.course.setCreatedAt(classroom.getCreatedAt());
             this.course.setUpdateAt(classroom.getUpdateAt());
-            this.course.setAssignments(strAssignments);
+            Assignment[] assignments = new Assignment[strAssignments.length];
+            AssignmentV2[] assignmentsV2= new AssignmentV2[strAssignments.length];
+            for (int i = 0; i < strAssignments.length; i++) {
+                assignmentsV2[i]=new AssignmentV2();
+                assignments[i]=assignmentRepository.findBy_id(strAssignments[i]);
+                if(assignments[i].getGrades()==null){
+                    assignmentsV2[i].setGrades(new User[0]);
+                }
+                assignmentsV2[i].set_id(assignments[i].get_id());
+                assignmentsV2[i].setName(assignments[i].getName());
+                assignmentsV2[i].setPoint(assignments[i].getPoint());
+                assignmentsV2[i].setCreated_at(assignments[i].getCreatedAt());
+                assignmentsV2[i].setUpdate_at(assignments[i].getUpdateAt());
+
+
+            }
+            this.course.setAssignments(assignmentsV2);
 
 
             URI location = ServletUriComponentsBuilder
@@ -422,6 +436,74 @@ public class ClassroomController {
         this.course.setUpdateAt(classroom.getUpdateAt());
         this.course.setAssignments(strAssignments);
         return ResponseEntity.ok(new ApiClassroomResponse(true, 200, this.course));
+
+    }
+    @PostMapping({"/{slug}/assignment"})
+    public ResponseEntity<?> createAssignment(@PathVariable String slug, @Valid @RequestBody AssignmentRequest assignmentRequest, @CurrentUser UserPrincipal userPrincipal) {
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+        if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
+            System.out.println("TEACHER"+classroom.getTeachers());
+            System.out.println("USER"+userPrincipal.get_id());
+            return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
+        }
+
+        Assignment assignment = new Assignment();
+        String randomAssignmentId = randomStringSingleton.generateRandomString(24);
+        assignment.set_id(randomAssignmentId);
+        assignment.setName(assignmentRequest.getName());
+        assignment.setPoint(assignmentRequest.getPoint());
+        assignment.setCreatedAt(LocalDate.now());
+        assignment.setUpdateAt(LocalDate.now());
+        assignmentRepository.save(assignment);
+        if (classroom.getAssignments() == null) {
+            classroom.setAssignments(assignment.get_id());
+        } else {
+            classroom.setAssignments(classroom.getAssignments() + "," + assignment.get_id());
+        }
+        classroomRepository.save(classroom);
+        AssignmentV2 assignmentV2 = new AssignmentV2();
+        assignmentV2.set_id(assignment.get_id());
+        assignmentV2.setName(assignment.getName());
+        assignmentV2.setPoint(assignment.getPoint());
+        assignmentV2.setCreated_at(assignment.getCreatedAt());
+        assignmentV2.setUpdate_at(assignment.getUpdateAt());
+        assignmentV2.setGrades(new User[0]);
+
+        return ResponseEntity.ok(new AssignmentResponeV2(200, true,"Assignment added successfully", assignmentV2));
+    }
+    @GetMapping({"/{slug}/assignment"})
+    public ResponseEntity<?> showAssignment(@PathVariable String slug, @CurrentUser UserPrincipal userPrincipal) {
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+        if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
+        }
+        String[] strAssignments = classroom.getAssignments() != null
+                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
+                : new String[0];
+
+        Assignment[] assignments = new Assignment[strAssignments.length];
+        AssignmentV2[] assignmentsV2= new AssignmentV2[strAssignments.length];
+        for (int i = 0; i < strAssignments.length; i++) {
+            assignmentsV2[i]=new AssignmentV2();
+            assignments[i]=assignmentRepository.findBy_id(strAssignments[i]);
+            if(assignments[i].getGrades()==null){
+                assignmentsV2[i].setGrades(new User[0]);
+            }
+            assignmentsV2[i].set_id(assignments[i].get_id());
+            assignmentsV2[i].setName(assignments[i].getName());
+            assignmentsV2[i].setPoint(assignments[i].getPoint());
+            assignmentsV2[i].setCreated_at(assignments[i].getCreatedAt());
+            assignmentsV2[i].setUpdate_at(assignments[i].getUpdateAt());
+
+
+        }
+        return ResponseEntity.ok(new AssignmentResponeV2(200, true,assignmentsV2));
 
 
     }
