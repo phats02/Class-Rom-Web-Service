@@ -60,6 +60,8 @@ public class User implements UserDetails {
     private String facebook_id;
     @Column(name="forgot_password_code")
     private String forgot_password_code;
+    @Column(name="student")
+    private String student;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -219,5 +221,53 @@ public class User implements UserDetails {
 
     public void setProviderId(String providerId) {
         this.providerId = providerId;
+    }
+
+    public LocalDate getUpdate_at() {
+        return update_at;
+    }
+
+    public void setUpdate_at(LocalDate update_at) {
+        this.update_at = update_at;
+    }
+
+    public LocalDate getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(LocalDate created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getGoogle_id() {
+        return google_id;
+    }
+
+    public void setGoogle_id(String google_id) {
+        this.google_id = google_id;
+    }
+
+    public String getFacebook_id() {
+        return facebook_id;
+    }
+
+    public void setFacebook_id(String facebook_id) {
+        this.facebook_id = facebook_id;
+    }
+
+    public String getForgot_password_code() {
+        return forgot_password_code;
+    }
+
+    public void setForgot_password_code(String forgot_password_code) {
+        this.forgot_password_code = forgot_password_code;
+    }
+
+    public String getStudent() {
+        return student;
+    }
+
+    public void setStudent(String student) {
+        this.student = student;
     }
 }

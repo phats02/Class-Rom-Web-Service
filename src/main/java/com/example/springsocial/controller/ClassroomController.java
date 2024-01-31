@@ -554,12 +554,15 @@ public class ClassroomController {
         Classroom classroom = classroomRepository.findBySlug(slug);
         String randomGradeId = randomStringSingleton.generateRandomString(24);
         Assignment assignment = new Assignment();
+        Grade checkGradeExist = new Grade();
+
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
         if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorize"));
         }
+
         String[] strAssignment = classroom.getAssignments() != null
                 ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
                 : new String[0];
@@ -572,10 +575,21 @@ public class ClassroomController {
                         ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
                         : new String[0];
 
+
                 if (strGrade.length == 0) {
                     assignment.setGrades(randomGradeId);
                     assignmentRepository.save(assignment);
                 } else {
+                    for (int j = 0; j < strGrade.length; j++) {
+                        checkGradeExist = gradeRepository.findBy_id(strGrade[j]);
+                        if (checkGradeExist.getStudentId().equals(classroomRequest.getStudentId())) {
+                            checkGradeExist.setGrade(classroomRequest.getGrade());
+                            checkGradeExist.setDraft(true);
+                            gradeRepository.save(checkGradeExist);
+                            return ResponseEntity.ok(new ApiResponse(200, true, "Grade updated successfully"));
+                        }
+                    }
+
 
                     assignment.setGrades(assignment.getGrades() + "," + randomGradeId);
                     assignmentRepository.save(assignment);
@@ -615,9 +629,11 @@ public class ClassroomController {
         for (int i = 0; i < strAssignment.length; i++) {
             if (strAssignment[i].equals(id)) {
                 assignment = assignmentRepository.findBy_id(strAssignment[i]);
+
                 String[] strGrade = assignment.getGrades() != null
                         ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
                         : new String[0];
+
                 grades = new Grade[strGrade.length];
                 for (int j = 0; j < strGrade.length; j++) {
 
@@ -633,12 +649,45 @@ public class ClassroomController {
             gradesV2[i].set_id(grades[i].get_id());
             gradesV2[i].setDraft(grades[i].isDraft());
             gradesV2[i].setGrade(grades[i].getGrade());
-
-
         }
 
         return ResponseEntity.ok(new GradeResponse(200, true, "Grade found", gradesV2));
 
+    }
+
+    @PostMapping("/{slug}/assignment/{id}/finalize")
+    public ResponseEntity<?> setSingleGradeFinalize(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) {
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        Assignment assignment = new Assignment();
+        Grade[] grades = new Grade[0];
+        Grade grade = new Grade();
+
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+        if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorize"));
+        }
+        String[] strAssignment = classroom.getAssignments() != null
+                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
+                : new String[0];
+        for (int i = 0; i < strAssignment.length; i++) {
+            if (strAssignment[i].equals(id)) {
+                assignment = assignmentRepository.findBy_id(strAssignment[i]);
+                String[] strGrade = assignment.getGrades() != null
+                        ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
+                        : new String[0];
+                for (int j = 0; j < strGrade.length; j++) {
+                    grade = gradeRepository.findBy_id(strGrade[j]);
+                    if (grade.getStudentId().equals(classroomRequest.getStudentId())) {
+                        grade.setDraft(false);
+                        gradeRepository.save(grade);
+                        return ResponseEntity.ok(new ApiResponse(200, true, "Finalize grade set successfully"));
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok(new ApiResponse(200, false, "Something wrong"));
     }
 
 }
