@@ -34,8 +34,8 @@ public class Classroom {
     private String owner;
     @Column(name = "join_id")
     private String join_id;
-
     private String assignments;
+    @Column(name="student_ids")
     private String studentIds;
 
     public String getStudentsIds() {

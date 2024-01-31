@@ -4,9 +4,11 @@ import javax.validation.constraints.NotBlank;
 
 public class ClassroomRequest {
 
-    @NotBlank
     private String name;
     private String description;
+
+    private String[] studentIds;
+    private int grade;
 
 
     public String getName() {
@@ -25,6 +27,19 @@ public class ClassroomRequest {
         this.description = description;
     }
 
+    public String[] getStudentIds() {
+        return studentIds;
+    }
 
+    public void setStudentIds(String[] studentIds) {
+        this.studentIds = studentIds;
+    }
 
+    public int getGrade() {
+        return grade;
+    }
+
+    public void setGrade(int grade) {
+        this.grade = grade;
+    }
 }

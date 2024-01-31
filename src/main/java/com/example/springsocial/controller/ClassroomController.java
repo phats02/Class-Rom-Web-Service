@@ -71,21 +71,6 @@ public class ClassroomController {
         System.out.println("Variable type: " + variableType.getName());
     }
 
-    public ClassroomV2 getCourse() {
-        return course;
-    }
-
-    public void setCourse(ClassroomV2 course) {
-        this.course = course;
-    }
-
-    public ClassroomV2[] getCourses() {
-        return courses;
-    }
-
-    public void setCourses(ClassroomV2[] courses) {
-        this.courses = courses;
-    }
 
     @GetMapping()
     public ResponseEntity<?> getAllClassroomByOwner(@CurrentUser UserPrincipal userPrincipal) {
@@ -150,33 +135,50 @@ public class ClassroomController {
                 String[] strStudentsIds = classroom[i].getStudentsIds() != null
                         ? convertStringToArrayList.convertToArrayList(classroom[i].getStudentsIds()).toArray(new String[0])
                         : new String[0];
+
                 this.courses[i].setOwner(customUserDetailsService.loadUserBy_id(classroom[i].getOwner()));
 
                 User[] userTeachers = new User[strTeachers.length];
-                User[] userStudentsIds = new User[strStudentsIds.length];
 
                 for (int j = 0; j < strTeachers.length; j++) {
                     userTeachers[j] = customUserDetailsService.loadUserBy_id(strTeachers[j]);
 
 
                 }
-                for (int j = 0; j < strStudentsIds.length; j++) {
-                    userStudentsIds[j] = customUserDetailsService.loadUserBy_id(strStudentsIds[j]);
+
+                if(strTeachers.length!=0){
+                    this.courses[i].setTeachers(strTeachers);
+                }
+                if(strStudents.length!=0){
+                    this.courses[i].setStudents(strStudents);
+                }
+                if(strStudentsIds.length!=0){
+                    this.courses[i].setStudentIds(strStudentsIds);
+                }
+                if(strAssignments.length!=0){
+                    this.courses[i].setAssignments(strAssignments);
                 }
 
 
-                this.courses[i].setTeachers(strTeachers);
-                this.courses[i].setStudents(strStudents);
-                this.courses[i].setStudentIds(userStudentsIds);
                 this.courses[i].set_id(classroom[i].get_id());
+                //System.out.println("dddddddd");
                 this.courses[i].setName(classroom[i].getName());
+                //System.out.println("eeeeeeeeeeeee");
                 this.courses[i].setDescription(classroom[i].getDescription());
+                //System.out.println("fffffffffffff");
                 this.courses[i].setSlug(classroom[i].getSlug());
+                //System.out.println("gggggggggggggg");
                 this.courses[i].setJoinId(classroom[i].getJoinId());
+                //System.out.println("hhhhhhhhhhhhhhhhh");
                 this.courses[i].setCreatedAt(classroom[i].getCreatedAt());
+                //System.out.println("jjjjjjjjjjjjjjjjj");
                 this.courses[i].setUpdateAt(classroom[i].getUpdateAt());
-                this.courses[i].setAssignments(strAssignments);
+                //System.out.println("kkkkkkkkkkkkkkkkk");
+                //System.out.println("lllllllllllllllll");
+
             }
+
+
 
 
 
@@ -287,6 +289,9 @@ public class ClassroomController {
             String[] strStudentsIds = classroom.getStudentsIds() != null
                     ? convertStringToArrayList.convertToArrayList(classroom.getStudentsIds()).toArray(new String[0])
                     : new String[0];
+            for(int i=0;i<strStudentsIds.length;i++){
+                System.out.println(strStudentsIds[i]);
+            }
             User[] userTeachers = new User[strTeachers.length];
             User[] userStudents = new User[strStudents.length];
             User[] userStudentsIds = new User[strStudentsIds.length];
@@ -299,14 +304,16 @@ public class ClassroomController {
                 userStudents[i] = customUserDetailsService.loadUserBy_id(strStudents[i]);
             }
 
-            for (int i = 0; i < strStudentsIds.length; i++) {
-                userStudentsIds[i] = customUserDetailsService.loadUserBy_id(strStudentsIds[i]);
-            }
+
 
             this.course.setTeachers(userTeachers);
             this.course.setStudents(userStudents);
-
-            this.course.setStudentIds(userStudentsIds);
+            if(strStudentsIds.length!=0){
+                this.course.setStudentIds(strStudentsIds);
+            }
+            else if(strStudentsIds.length==0){
+                this.course.setStudentIds(new User[0]);
+            }
             this.course.setOwner(classroom.getOwner());
             this.course.set_id(classroom.get_id());
             this.course.setName(classroom.getName());
@@ -320,18 +327,24 @@ public class ClassroomController {
             for (int i = 0; i < strAssignments.length; i++) {
                 assignmentsV2[i]=new AssignmentV2();
                 assignments[i]=assignmentRepository.findBy_id(strAssignments[i]);
-                if(assignments[i].getGrades()==null){
-                    assignmentsV2[i].setGrades(new User[0]);
-                }
-                assignmentsV2[i].set_id(assignments[i].get_id());
-                assignmentsV2[i].setName(assignments[i].getName());
-                assignmentsV2[i].setPoint(assignments[i].getPoint());
-                assignmentsV2[i].setCreated_at(assignments[i].getCreatedAt());
-                assignmentsV2[i].setUpdate_at(assignments[i].getUpdateAt());
+                if (assignments[i] != null) {
+                    if(assignments[i].getGrades()==null){
+                        assignmentsV2[i].setGrades(new User[0]);
+                    }
+                    assignmentsV2[i].set_id(assignments[i].get_id());
+                    assignmentsV2[i].setName(assignments[i].getName());
+                    assignmentsV2[i].setPoint(assignments[i].getPoint());
+                    assignmentsV2[i].setCreated_at(assignments[i].getCreatedAt());
+                    assignmentsV2[i].setUpdate_at(assignments[i].getUpdateAt());
 
+                }
 
             }
-            this.course.setAssignments(assignmentsV2);
+            if(assignmentsV2.length!=0)
+                this.course.setAssignments(assignmentsV2);
+            else if(assignmentsV2.length==0){
+                this.course.setAssignments(new AssignmentV2[0]);
+            }
 
 
             URI location = ServletUriComponentsBuilder
@@ -504,7 +517,62 @@ public class ClassroomController {
 
         }
         return ResponseEntity.ok(new AssignmentResponeV2(200, true,assignmentsV2));
-
-
     }
+    @PostMapping({"/{slug}/studentid"})
+    public ResponseEntity<?>setCourseStudentIds(@PathVariable String slug,@Valid @RequestBody ClassroomRequest classroomRequest ){
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+        if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(classroom.getOwner())) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
+        }
+        if(classroomRequest.getStudentIds()==null){
+            classroom.setStudentsIds("");
+        }else{
+            for(int i=0;i<classroomRequest.getStudentIds().length;i++){
+                System.out.println(classroomRequest.getStudentIds()[i]);
+                if(i==0){
+                    classroom.setStudentsIds(classroomRequest.getStudentIds()[i]);
+                }else{
+                    classroom.setStudentsIds(classroom.getStudentsIds()+","+classroomRequest.getStudentIds()[i]);
+                }
+            }
+        }
+        classroomRepository.save(classroom);
+        return ResponseEntity.ok(new ApiResponse(200, true, "Student Ids added successfully"));
+    }
+//    @PostMapping("/{slug}/assignment/{id}/grade")
+//    public ResponseEntity<?>setSingleStudentGrade(@PathVariable String slug,@PathVariable String id,@Valid @RequestBody ClassroomRequest classroomRequest,@CurrentUser UserPrincipal userPrincipal){
+//        Classroom classroom = classroomRepository.findBySlug(slug);
+//        if (classroom == null) {
+//            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+//        }
+//        if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
+//            return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
+//        }
+//        Assignment assignment = assignmentRepository.findBy_id(id);
+//        if(assignment==null){
+//            return ResponseEntity.ok(new ApiResponse(200, false, "Assignment not found"));
+//        }
+//        if(assignment.getGrades()==null){
+//            assignment.setGrades(userPrincipal.get_id()+":"+classroomRequest.getGrade());
+//        }else{
+//            String[] strGrades = assignment.getGrades() != null
+//                    ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
+//                    : new String[0];
+//            for(int i=0;i<strGrades.length;i++){
+//                String[] strGrade = strGrades[i].split(":");
+//                if(strGrade[0].equals(userPrincipal.get_id())){
+//                    strGrades[i]=userPrincipal.get_id()+":"+gradeRequest.getGrade();
+//                    break;
+//                }
+//                if(i==strGrades.length-1){
+//                    assignment.setGrades(assignment.getGrades()+","+userPrincipal.get_id()+":"+gradeRequest.getGrade());
+//                }
+//            }
+//        }
+//        assignmentRepository.save(assignment);
+//        return ResponseEntity.ok(new ApiResponse(200, true, "Grade added successfully"));
+//    }
 }

@@ -27,7 +27,7 @@ public class ApiClassroomResponse<T> {
     // @Autowired
     private String[] assignments;
     // @Autowired
-    private String[] studentsIds;
+    private String[] studentIds;
     // @Autowired
     private String _id;
     // @Autowired
@@ -133,12 +133,12 @@ public class ApiClassroomResponse<T> {
         this.assignments = assignments;
     }
 
-    public String[] getStudentsIds() {
-        return studentsIds;
+    public String[] getStudentIds() {
+        return studentIds;
     }
 
-    public void setStudentsIds(String[] studentsIds) {
-        this.studentsIds = studentsIds;
+    public void setStudentIds(String[] studentIds) {
+        this.studentIds = studentIds;
     }
 
     public String get_id() {
