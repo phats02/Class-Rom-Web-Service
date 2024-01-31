@@ -8,7 +8,9 @@ public class ClassroomRequest {
     private String description;
 
     private String[] studentIds;
-    private int grade;
+    private float grade;
+    private String studentId;
+
 
 
     public String getName() {
@@ -35,11 +37,19 @@ public class ClassroomRequest {
         this.studentIds = studentIds;
     }
 
-    public int getGrade() {
+    public float getGrade() {
         return grade;
     }
 
-    public void setGrade(int grade) {
+    public void setGrade(float grade) {
         this.grade = grade;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 
 @Repository
-public class AssignmentV2 {
+public class AssignmentV2<T> {
 
     private String _id;
 
@@ -17,7 +17,8 @@ public class AssignmentV2 {
 
     private float point;
 
-    private User[] grades ;
+    private T[] grades ;
+    private String grade;
 
     public String get_id() {
         return _id;
@@ -59,11 +60,19 @@ public class AssignmentV2 {
         this.point = point;
     }
 
-    public User[] getGrades() {
+    public T[] getGrades() {
         return grades;
     }
 
-    public void setGrades(User[] grades) {
+    public void setGrades(T[] grades) {
         this.grades = grades;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
     }
 }

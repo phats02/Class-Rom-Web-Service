@@ -22,8 +22,9 @@ public class Assignment {
     private String name;
     @Column(name="point")
     private float point;
+
     @Column(name="grades")
-    private User[] grades ;
+    private String grades ;
 
     public Long getId() {
         return id;
@@ -73,11 +74,11 @@ public class Assignment {
         this.point = point;
     }
 
-    public User[] getGrades() {
+    public String getGrades() {
         return grades;
     }
 
-    public void setGrades(User[] grades) {
+    public void setGrades(String grades) {
         this.grades = grades;
     }
 }
