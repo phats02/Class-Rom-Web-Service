@@ -52,7 +52,7 @@ public class Grade {
         this.draft = draft;
     }
 
-    public String isStudentId() {
+    public String getStudentId() {
         return studentId;
     }
 

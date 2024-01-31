@@ -8,5 +8,5 @@ import com.example.springsocial.model.Grade;
 
 @Repository
 public interface GradeRepository extends JpaRepository<Grade, Long> {
-
+    Grade findBy_id(String _id);
 }
