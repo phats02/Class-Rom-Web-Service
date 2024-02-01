@@ -42,6 +42,8 @@ public class ClassroomController {
     @Autowired
     private AssignmentV2Repository assignmentV2Repository;
     @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
     private GradeRepository gradeRepository;
     @Autowired
     private GradeReviewRepository gradeReviewRepository;
@@ -75,7 +77,7 @@ public class ClassroomController {
         System.out.println("Variable type: " + variableType.getName());
     }
 
-
+    //done 1
     @GetMapping()
     public ResponseEntity<?> getAllClassroomByOwner(@CurrentUser UserPrincipal userPrincipal) {
         Classroom[] classroom1 = new Classroom[100];
@@ -187,7 +189,7 @@ public class ClassroomController {
         }
     }
 
-
+    //done 2
     @PostMapping("/store")
     public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) {
         //design pattern  singleton
@@ -272,6 +274,7 @@ public class ClassroomController {
 
     }
 
+    //done 3
     @GetMapping("/{slug}")
     public ResponseEntity<?> showOneClassroom(@PathVariable String slug) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -380,7 +383,7 @@ public class ClassroomController {
 
     }
 
-
+    //done 4
     @GetMapping({"/{classId}/invitation"})
     public ResponseEntity<?> ShowClassroomCode(@PathVariable String classId) {
         Invitation invitation = invitationRepository.findByCourseId(classId);
@@ -394,6 +397,7 @@ public class ClassroomController {
         }
     }
 
+    //done 5
     @GetMapping({"/join/{id}"})
     public ResponseEntity<?> joinCourse(@PathVariable String id, @CurrentUser UserPrincipal userPrincipal) {
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
@@ -474,6 +478,7 @@ public class ClassroomController {
 
     }
 
+    //done 7
     @PostMapping({"/{slug}/assignment"})
     public ResponseEntity<?> createAssignment(@PathVariable String slug, @Valid @RequestBody AssignmentRequest assignmentRequest, @CurrentUser UserPrincipal userPrincipal) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -513,6 +518,7 @@ public class ClassroomController {
         return ResponseEntity.ok(new AssignmentResponeV2(200, true, "Assignment added successfully", assignmentV2));
     }
 
+    //done 6
     @GetMapping({"/{slug}/assignment"})
     public ResponseEntity<?> showAssignment(@PathVariable String slug, @CurrentUser UserPrincipal userPrincipal) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -549,6 +555,7 @@ public class ClassroomController {
         return ResponseEntity.ok(new AssignmentResponeV2(200, true, assignmentsV2));
     }
 
+    //done 8
     @PostMapping({"/{slug}/studentid"})
     public ResponseEntity<?> setCourseStudentIds(@PathVariable String slug, @Valid @RequestBody ClassroomRequest classroomRequest) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -574,6 +581,7 @@ public class ClassroomController {
         return ResponseEntity.ok(new ApiResponse(200, true, "Student Ids added successfully"));
     }
 
+    //done 10
     @PostMapping("/{slug}/assignment/{id}/grade")
     public ResponseEntity<?> setSingleStudentGrade(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -636,7 +644,7 @@ public class ClassroomController {
         return ResponseEntity.ok(new ApiResponse(200, false, "Assignment not found"));
     }
 
-
+    //done 9
     @GetMapping("/{slug}/assignment/{id}/grade")
     public ResponseEntity<?> getSingleStudentGrade(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -680,6 +688,7 @@ public class ClassroomController {
 
     }
 
+    //done 11
     @PostMapping("/{slug}/assignment/{id}/finalize")
     public ResponseEntity<?> setSingleGradeFinalize(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -715,6 +724,7 @@ public class ClassroomController {
         return ResponseEntity.ok(new ApiResponse(200, true, "Finalize grade set successfully"));
     }
 
+    //done 12
     @GetMapping("/{slug}/assignment/{id}/review")
     public ResponseEntity<?> getGradeReviews(@PathVariable String slug, @PathVariable String id) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -737,7 +747,6 @@ public class ClassroomController {
                 assignment = assignmentRepository.findBy_id(strAssignment[i]);
                 if (gradeReviewRepository.findByAssignmentId(id) == null) {
                     continue;
-
                 } else {
                     gradeReviews[sizeGradeReview] = gradeReviewRepository.findByAssignmentId(id);
                     sizeGradeReview++;
@@ -749,6 +758,7 @@ public class ClassroomController {
 
         for (int i = 0; i < sizeGradeReview; i++) {
             gradeReviewV2s[i] = new GradeReviewV2();
+            gradeReviewV2s[i].setId(gradeReviews[i].getId());
             gradeReviewV2s[i].set_id(gradeReviews[i].get_id());
             gradeReviewV2s[i].setStudentId(gradeReviews[i].getStudentId());
             gradeReviewV2s[i].setAssignmentId(gradeReviews[i].getAssignmentId());
@@ -756,6 +766,8 @@ public class ClassroomController {
             gradeReviewV2s[i].setActualGrade(gradeReviews[i].getActualGrade());
             gradeReviewV2s[i].setMessage(gradeReviews[i].getMessage());
             gradeReviewV2s[i].setStatus(gradeReviews[i].getStatus());
+            gradeReviewV2s[i].setCreatedAt(gradeReviews[i].getCreatedAt());
+            gradeReviewV2s[i].setUpdatedAt(gradeReviews[i].getUpdatedAt());
             if (gradeReviews[i].getComments() != null) {
                 String[] strComments = gradeReviews[i].getComments() != null
                         ? convertStringToArrayList.convertToArrayList(gradeReviews[i].getComments()).toArray(new String[0])
@@ -765,9 +777,42 @@ public class ClassroomController {
                 gradeReviewV2s[i].setComments(new String[0]);
             }
         }
-        return ResponseEntity.ok(new GradeReviewRespone(true, 200, gradeReviewV2s));
+        GradeReviewV3[] gradeReviewV3s = new GradeReviewV3[gradeReviewV2s.length];
+        for (int i = 0; i < gradeReviewV2s.length; i++) {
+            gradeReviewV3s[i] = new GradeReviewV3();
+            gradeReviewV3s[i].setId(gradeReviewV2s[i].getId());
+            gradeReviewV3s[i].set_id(gradeReviewV2s[i].get_id());
+            gradeReviewV3s[i].setStudentId(gradeReviewV2s[i].getStudentId());
+            gradeReviewV3s[i].setAssignmentId(gradeReviewV2s[i].getAssignmentId());
+            gradeReviewV3s[i].setExpectedGrade(gradeReviewV2s[i].getExpectedGrade());
+            gradeReviewV3s[i].setActualGrade(gradeReviewV2s[i].getActualGrade());
+            gradeReviewV3s[i].setMessage(gradeReviewV2s[i].getMessage());
+            gradeReviewV3s[i].setStatus(gradeReviewV2s[i].getStatus());
+            gradeReviewV3s[i].setCreatedAt(gradeReviewV2s[i].getCreatedAt());
+            gradeReviewV3s[i].setUpdatedAt(gradeReviewV2s[i].getUpdatedAt());
+            if (gradeReviewV2s[i].getComments().length==0) {
+                System.out.println("NULLLLLLLLLLLLL");
+                gradeReviewV3s[i].setComments(new Comment[0]);
+            } else {
+                System.out.println("NOTTTTTTTTTTTTT");
+                System.out.println("LENGTH"+gradeReviewV2s[i].getComments().length);
+                Comment[] comments = new Comment[gradeReviewV2s[i].getComments().length];
+
+                for (int j = 0; j < gradeReviewV2s[i].getComments().length; j++) {
+                    System.out.println("COMment"+gradeReviewV2s[i].getComments());
+                    Comment comment = commentRepository.findBy_id(gradeReviewV2s[i].getComments()[j]);
+                    comments[j] = comment;
+                    gradeReviewV3s[i].setComments(comments);
+                }
+            }
+
+
+        }
+        return ResponseEntity.ok(new GradeReviewResponeV2(true, 200, gradeReviewV3s));
+
     }
 
+    //done 13
     @PostMapping("/{slug}/assignment/{id}/review")
     public ResponseEntity<?> submitGradeReview(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -803,7 +848,7 @@ public class ClassroomController {
                         gradeReview.setActualGrade(grade.getGrade());
                         gradeReview.setMessage(reviewRequest.getMessage());
                         gradeReview.setStatus(0);
-                        gradeReview.setComments("");
+                        gradeReview.setComments(null);
                         gradeReview.setCreatedAt(LocalDate.now());
                         gradeReview.setUpdatedAt(LocalDate.now());
                         gradeReviewRepository.save(gradeReview);
@@ -819,6 +864,7 @@ public class ClassroomController {
 
     }
 
+    //done 14
     @PostMapping("/{slug}/assignment/{id}/review/{reviewId}/finalize")
     public ResponseEntity<?> makeFinalReview(@PathVariable String slug, @PathVariable String id, @PathVariable String reviewId, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) {
         Classroom classroom = classroomRepository.findBySlug(slug);
@@ -836,7 +882,6 @@ public class ClassroomController {
         String[] strAssignment = classroom.getAssignments() != null
                 ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
                 : new String[0];
-        System.out.println("-11111111111111111111");
 
         for (int i = 0; i < strAssignment.length; i++) {
             if (strAssignment[i].equals(id)) {
@@ -847,9 +892,8 @@ public class ClassroomController {
 
                 for (int j = 0; j < strGrade.length; j++) {
                     grade = gradeRepository.findBy_id(strGrade[j]);
-                    System.out.println("GRADE" + grade.get_id());
                     if (grade.getStudentId().equals(gradeReview1.getStudentId())) {
-                            System.out.println(reviewRequest.getApprove());
+                        System.out.println(reviewRequest.getApprove());
                         System.out.println(reviewRequest.getGrade());
                         if (reviewRequest.getApprove() == false) {
                             gradeReview1.setStatus(2);
@@ -868,6 +912,55 @@ public class ClassroomController {
             }
         }
         return ResponseEntity.ok(new ApiResponse(200, false, "Not found assignment"));
+    }
+
+    //done 15
+    @PostMapping("/{slug}/assignment/{id}/review/{reviewId}/comment")
+    public ResponseEntity<?> reviewAddComment(@PathVariable String slug, @PathVariable String id, @PathVariable String reviewId, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody CommentRequest commentRequest) {
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
+        Assignment assignment = new Assignment();
+        Grade grade = new Grade();
+        GradeReview gradeReview = new GradeReview();
+        String randomCommentId = randomStringSingleton.generateRandomString(24);
+        GradeReview gradeReview1 = gradeReviewRepository.findBy_id(reviewId);
+
+        Comment comment = new Comment();
+        comment.set_id(randomCommentId);
+        comment.setContent(commentRequest.getContent());
+        comment.setCreatedAt(LocalDate.now());
+        comment.setUserId(user.get_id());
+        comment.setName(user.getName());
+        commentRepository.save(comment);
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+
+        String[] strAssignment = classroom.getAssignments() != null
+                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
+                : new String[0];
+
+        for (int i = 0; i < strAssignment.length; i++) {
+            if (strAssignment[i].equals(id)) {
+                assignment = assignmentRepository.findBy_id(strAssignment[i]);
+                String[] strGrade = assignment.getGrades() != null
+                        ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
+                        : new String[0];
+                for (int j = 0; j < strGrade.length; j++) {
+                    grade = gradeRepository.findBy_id(strGrade[j]);
+                    if (grade.getStudentId().equals(gradeReview1.getStudentId())) {
+                        if (gradeReview1.getComments() == null) {
+                            gradeReview1.setComments(randomCommentId);
+                            gradeReviewRepository.save(gradeReview1);
+                        } else {
+                            gradeReview1.setComments(gradeReview1.getComments() + "," + randomCommentId);
+                            gradeReviewRepository.save(gradeReview1);
+                        }
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok(new CommentResponse(200, true, "Comment added successfully",comment));
     }
 
 }

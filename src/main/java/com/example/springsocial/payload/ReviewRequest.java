@@ -6,6 +6,7 @@ public class ReviewRequest {
     private float grade;
     private boolean approve;
 
+
     public float getGrade() {
         return grade;
     }
