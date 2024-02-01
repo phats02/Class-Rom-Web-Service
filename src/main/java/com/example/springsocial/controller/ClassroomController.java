@@ -273,6 +273,8 @@ public class ClassroomController {
     @GetMapping("/{slug}")
     public ResponseEntity<?> showOneClassroom(@PathVariable String slug) {
         Classroom classroom = classroomRepository.findBySlug(slug);
+        Grade[] grades = new Grade[0];
+
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "No class found"));
         } else {
@@ -294,6 +296,7 @@ public class ClassroomController {
             User[] userTeachers = new User[strTeachers.length];
             User[] userStudents = new User[strStudents.length];
             User[] userStudentsIds = new User[strStudentsIds.length];
+            User owner = customUserDetailsService.loadUserBy_id(classroom.getOwner());
 
             for (int i = 0; i < strTeachers.length; i++) {
                 userTeachers[i] = customUserDetailsService.loadUserBy_id(strTeachers[i]);
@@ -311,7 +314,7 @@ public class ClassroomController {
             } else if (strStudentsIds.length == 0) {
                 this.course.setStudentIds(new User[0]);
             }
-            this.course.setOwner(classroom.getOwner());
+            this.course.setOwner(owner);
             this.course.set_id(classroom.get_id());
             this.course.setName(classroom.getName());
             this.course.setDescription(classroom.getDescription());
@@ -327,6 +330,27 @@ public class ClassroomController {
                 if (assignments[i] != null) {
                     if (assignments[i].getGrades() == null) {
                         assignmentsV2[i].setGrades(new User[0]);
+                    }
+                    else{
+                        String[] strGrade = assignments[i].getGrades() != null
+                                ? convertStringToArrayList.convertToArrayList(assignments[i].getGrades()).toArray(new String[0])
+                                : new String[0];
+
+                        grades = new Grade[strGrade.length];
+                        for (int j = 0; j < strGrade.length; j++) {
+
+                            grades[j] = gradeRepository.findBy_id(strGrade[j]);
+                        }
+                        GradeV2[] gradesV2 = new GradeV2[grades.length];
+                        for (int k = 0; k < grades.length; k++) {
+                            gradesV2[k] = new GradeV2();
+                            gradesV2[k].setGradeid(grades[k].getId());
+                            gradesV2[k].setId(grades[k].getStudentId());
+                            gradesV2[k].set_id(grades[k].get_id());
+                            gradesV2[k].setDraft(grades[k].isDraft());
+                            gradesV2[k].setGrade(grades[k].getGrade());
+                        }
+                        assignmentsV2[i].setGrades(gradesV2);
                     }
                     assignmentsV2[i].set_id(assignments[i].get_id());
                     assignmentsV2[i].setName(assignments[i].getName());
@@ -682,12 +706,17 @@ public class ClassroomController {
                     if (grade.getStudentId().equals(classroomRequest.getStudentId())) {
                         grade.setDraft(false);
                         gradeRepository.save(grade);
-                        return ResponseEntity.ok(new ApiResponse(200, true, "Finalize grade set successfully"));
                     }
                 }
+
             }
         }
-        return ResponseEntity.ok(new ApiResponse(200, false, "Something wrong"));
+        return ResponseEntity.ok(new ApiResponse(200, true, "Finalize grade set successfully"));
     }
+
+
+
+
+
 
 }

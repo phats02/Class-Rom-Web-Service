@@ -31,9 +31,9 @@ public class ApiClassroomResponse<T> {
     // @Autowired
     private String _id;
     // @Autowired
-    private LocalDate created_at;
+    private LocalDate createdAt;
     // @Autowired
-    private LocalDate update_at;
+    private LocalDate updatedAt;
     // @Autowired
     private String slug;
 
@@ -149,20 +149,20 @@ public class ApiClassroomResponse<T> {
         this._id = _id;
     }
 
-    public LocalDate getCreated_at() {
-        return created_at;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDate created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDate getUpdate_at() {
-        return update_at;
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdate_at(LocalDate update_at) {
-        this.update_at = update_at;
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getSlug() {

@@ -13,8 +13,8 @@ public class ClassroomV2<T> {
     private T[] students;
     private String name;
     private String description;
-    private LocalDate created_at;
-    private LocalDate update_at;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
     private String slug;
     private T owner;
     private String join_id;
@@ -65,19 +65,19 @@ public class ClassroomV2<T> {
     }
 
     public LocalDate getCreatedAt() {
-        return this.created_at;
+        return this.createdAt;
     }
 
     public void setCreatedAt(LocalDate createdAt) {
-        this.created_at = createdAt;
+        this.createdAt = createdAt;
     }
 
     public LocalDate getUpdateAt() {
-        return update_at;
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDate updateAt) {
-        this.update_at = updateAt;
+    public void setUpdateAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getSlug() {

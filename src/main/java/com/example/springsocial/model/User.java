@@ -43,10 +43,10 @@ public class User implements UserDetails {
     private String activationCode;
 
     @Column(name = "update_at")
-    private LocalDate update_at;
+    private LocalDate updatedAt;
 
     @Column(name = "created_at")
-    private LocalDate created_at;
+    private LocalDate createdAt;
 
     @Column(name = "status")
     private int status=0;
@@ -149,20 +149,20 @@ public class User implements UserDetails {
         this.activationCode = activationCode;
     }
 
-    public LocalDate getUpdateAt() {
-        return update_at;
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdateAt(LocalDate updateAt) {
-        this.update_at = updateAt;
+    public void setUpdatedAt(LocalDate updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public LocalDate getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreatedAt(LocalDate createdAt) {
-        this.created_at = createdAt;
+        this.createdAt = createdAt;
     }
 
     public int getStatus() {
@@ -223,21 +223,7 @@ public class User implements UserDetails {
         this.providerId = providerId;
     }
 
-    public LocalDate getUpdate_at() {
-        return update_at;
-    }
 
-    public void setUpdate_at(LocalDate update_at) {
-        this.update_at = update_at;
-    }
-
-    public LocalDate getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(LocalDate created_at) {
-        this.created_at = created_at;
-    }
 
     public String getGoogle_id() {
         return google_id;
