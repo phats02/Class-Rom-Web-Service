@@ -19,4 +19,6 @@ public class GradeRequest {
     public void setGrade(float grade) {
         this.grade = grade;
     }
+
+
 }

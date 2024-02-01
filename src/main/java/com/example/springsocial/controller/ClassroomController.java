@@ -716,7 +716,7 @@ public class ClassroomController {
     }
 
     @GetMapping("/{slug}/assignment/{id}/review")
-    public ResponseEntity<?> getGradeReviews(@PathVariable String slug, @PathVariable String id, ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal, ReviewRequest reviewRequest) {
+    public ResponseEntity<?> getGradeReviews(@PathVariable String slug, @PathVariable String id) {
         Classroom classroom = classroomRepository.findBySlug(slug);
         Assignment assignment = new Assignment();
         Grade[] grades = new Grade[0];
@@ -736,26 +736,40 @@ public class ClassroomController {
             if (strAssignment[i].equals(id)) {
                 assignment = assignmentRepository.findBy_id(strAssignment[i]);
                 if (gradeReviewRepository.findByAssignmentId(id) == null) {
-                    System.out.println("111111111111111");
                     continue;
 
                 } else {
-                    System.out.println("22222222222222222");
                     gradeReviews[sizeGradeReview] = gradeReviewRepository.findByAssignmentId(id);
                     sizeGradeReview++;
                 }
-                System.out.println("33333333333333333");
             }
         }
         GradeReview[] result = new GradeReview[sizeGradeReview];
+        GradeReviewV2[] gradeReviewV2s = new GradeReviewV2[sizeGradeReview];
+
         for (int i = 0; i < sizeGradeReview; i++) {
-            result[i] = gradeReviews[i];
+            gradeReviewV2s[i] = new GradeReviewV2();
+            gradeReviewV2s[i].set_id(gradeReviews[i].get_id());
+            gradeReviewV2s[i].setStudentId(gradeReviews[i].getStudentId());
+            gradeReviewV2s[i].setAssignmentId(gradeReviews[i].getAssignmentId());
+            gradeReviewV2s[i].setExpectedGrade(gradeReviews[i].getExpectedGrade());
+            gradeReviewV2s[i].setActualGrade(gradeReviews[i].getActualGrade());
+            gradeReviewV2s[i].setMessage(gradeReviews[i].getMessage());
+            gradeReviewV2s[i].setStatus(gradeReviews[i].getStatus());
+            if (gradeReviews[i].getComments() != null) {
+                String[] strComments = gradeReviews[i].getComments() != null
+                        ? convertStringToArrayList.convertToArrayList(gradeReviews[i].getComments()).toArray(new String[0])
+                        : new String[0];
+                gradeReviewV2s[i].setComments(strComments);
+            } else {
+                gradeReviewV2s[i].setComments(new String[0]);
+            }
         }
-        return ResponseEntity.ok(new GradeReviewRespone(true, 200, result));
+        return ResponseEntity.ok(new GradeReviewRespone(true, 200, gradeReviewV2s));
     }
 
     @PostMapping("/{slug}/assignment/{id}/review")
-    public ResponseEntity<?> submitGradeReview(@PathVariable String slug, @PathVariable String id, ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal, ReviewRequest reviewRequest) {
+    public ResponseEntity<?> submitGradeReview(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) {
         Classroom classroom = classroomRepository.findBySlug(slug);
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Assignment assignment = new Assignment();
@@ -763,6 +777,7 @@ public class ClassroomController {
         Grade grade = new Grade();
         GradeReview gradeReview = new GradeReview();
         String randomGradeReviewId = randomStringSingleton.generateRandomString(24);
+
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
@@ -804,5 +819,55 @@ public class ClassroomController {
 
     }
 
+    @PostMapping("/{slug}/assignment/{id}/review/{reviewId}/finalize")
+    public ResponseEntity<?> makeFinalReview(@PathVariable String slug, @PathVariable String id, @PathVariable String reviewId, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) {
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
+        Assignment assignment = new Assignment();
+        Grade grade = new Grade();
+        GradeReview gradeReview = new GradeReview();
+        String randomGradeReviewId = randomStringSingleton.generateRandomString(24);
+        GradeReview gradeReview1 = gradeReviewRepository.findBy_id(reviewId);
+
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+
+        String[] strAssignment = classroom.getAssignments() != null
+                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
+                : new String[0];
+        System.out.println("-11111111111111111111");
+
+        for (int i = 0; i < strAssignment.length; i++) {
+            if (strAssignment[i].equals(id)) {
+                assignment = assignmentRepository.findBy_id(strAssignment[i]);
+                String[] strGrade = assignment.getGrades() != null
+                        ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
+                        : new String[0];
+
+                for (int j = 0; j < strGrade.length; j++) {
+                    grade = gradeRepository.findBy_id(strGrade[j]);
+                    System.out.println("GRADE" + grade.get_id());
+                    if (grade.getStudentId().equals(gradeReview1.getStudentId())) {
+                            System.out.println(reviewRequest.getApprove());
+                        System.out.println(reviewRequest.getGrade());
+                        if (reviewRequest.getApprove() == false) {
+                            gradeReview1.setStatus(2);
+                            gradeReviewRepository.save(gradeReview1);
+                            return ResponseEntity.ok(new ApiResponse(200, true, "Review marked as not approved"));
+                        } else if (reviewRequest.getApprove() == true) {
+
+                            gradeReview1.setStatus(1);
+                            grade.setGrade(reviewRequest.getGrade());
+                            gradeRepository.save(grade);
+                            gradeReviewRepository.save(gradeReview1);
+                            return ResponseEntity.ok(new ApiResponse(200, true, "Review marked as approved"));
+                        }
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok(new ApiResponse(200, false, "Not found assignment"));
+    }
 
 }
