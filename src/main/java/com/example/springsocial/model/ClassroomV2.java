@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 
 @Repository
-public class ClassroomV2<T> {
+public class ClassroomV2<T>  {
 
     private Long id;
     private String _id;
@@ -127,7 +127,10 @@ public class ClassroomV2<T> {
         this.id = id;
     }
 
-
+//    @Override
+//    protected ClassroomV2<T> clone() throws CloneNotSupportedException {
+//        return (ClassroomV2<T>) super.clone();
+//    }
 
 
 }

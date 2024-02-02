@@ -148,10 +148,7 @@ public class ClassroomController {
 
                 for (int j = 0; j < strTeachers.length; j++) {
                     userTeachers[j] = customUserDetailsService.loadUserBy_id(strTeachers[j]);
-
-
                 }
-
                 if (strTeachers.length != 0) {
                     this.courses[i].setTeachers(strTeachers);
                 }
@@ -164,34 +161,21 @@ public class ClassroomController {
                 if (strAssignments.length != 0) {
                     this.courses[i].setAssignments(strAssignments);
                 }
-
-
                 this.courses[i].set_id(classroom[i].get_id());
-                //System.out.println("dddddddd");
                 this.courses[i].setName(classroom[i].getName());
-                //System.out.println("eeeeeeeeeeeee");
                 this.courses[i].setDescription(classroom[i].getDescription());
-                //System.out.println("fffffffffffff");
                 this.courses[i].setSlug(classroom[i].getSlug());
-                //System.out.println("gggggggggggggg");
                 this.courses[i].setJoinId(classroom[i].getJoinId());
-                //System.out.println("hhhhhhhhhhhhhhhhh");
                 this.courses[i].setCreatedAt(classroom[i].getCreatedAt());
-                //System.out.println("jjjjjjjjjjjjjjjjj");
                 this.courses[i].setUpdateAt(classroom[i].getUpdateAt());
-                //System.out.println("kkkkkkkkkkkkkkkkk");
-                //System.out.println("lllllllllllllllll");
-
             }
-
-
             return ResponseEntity.ok(new ApiClassroomResponse(true, 200, courses));
         }
     }
 
     //done 2
     @PostMapping("/store")
-    public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<?> createClassroom(@Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
         //design pattern  singleton
         String randomInvitationId = randomStringSingleton.generateRandomString(24);
         ;
@@ -226,7 +210,9 @@ public class ClassroomController {
 
         classroom.setTeachers(userPrincipal.get_id());
 
-
+//        classroomRepository.save(classroom);
+//        //design pattern:prototype
+//        Classroom result = classroom.clone();
         Classroom result = classroomRepository.save(classroom);
 
         invitation.set_id(randomInvitationId);
@@ -329,7 +315,10 @@ public class ClassroomController {
             this.course.setUpdateAt(classroom.getUpdateAt());
             Assignment[] assignments = new Assignment[strAssignments.length];
             AssignmentV2[] assignmentsV2 = new AssignmentV2[strAssignments.length];
+            System.out.println("LENGTHHHH" + strAssignments.length);
             for (int i = 0; i < strAssignments.length; i++) {
+                System.out.println("111111111111111111");
+
                 assignmentsV2[i] = new AssignmentV2();
                 assignments[i] = assignmentRepository.findBy_id(strAssignments[i]);
                 if (assignments[i] != null) {
@@ -368,8 +357,11 @@ public class ClassroomController {
             if (assignmentsV2.length != 0)
                 this.course.setAssignments(assignmentsV2);
             else if (assignmentsV2.length == 0) {
+                System.out.println("222222222222222222");
+
                 this.course.setAssignments(new AssignmentV2[0]);
             }
+            System.out.println("3333333333333333333");
 
 
             URI location = ServletUriComponentsBuilder
@@ -488,8 +480,7 @@ public class ClassroomController {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
         if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
-            System.out.println("TEACHER" + classroom.getTeachers());
-            System.out.println("USER" + userPrincipal.get_id());
+
             return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
         }
 
@@ -790,16 +781,16 @@ public class ClassroomController {
             gradeReviewV3s[i].setStatus(gradeReviewV2s[i].getStatus());
             gradeReviewV3s[i].setCreatedAt(gradeReviewV2s[i].getCreatedAt());
             gradeReviewV3s[i].setUpdatedAt(gradeReviewV2s[i].getUpdatedAt());
-            if (gradeReviewV2s[i].getComments().length==0) {
+            if (gradeReviewV2s[i].getComments().length == 0) {
                 System.out.println("NULLLLLLLLLLLLL");
                 gradeReviewV3s[i].setComments(new Comment[0]);
             } else {
                 System.out.println("NOTTTTTTTTTTTTT");
-                System.out.println("LENGTH"+gradeReviewV2s[i].getComments().length);
+                System.out.println("LENGTH" + gradeReviewV2s[i].getComments().length);
                 Comment[] comments = new Comment[gradeReviewV2s[i].getComments().length];
 
                 for (int j = 0; j < gradeReviewV2s[i].getComments().length; j++) {
-                    System.out.println("COMment"+gradeReviewV2s[i].getComments());
+                    System.out.println("COMment" + gradeReviewV2s[i].getComments());
                     Comment comment = commentRepository.findBy_id(gradeReviewV2s[i].getComments()[j]);
                     comments[j] = comment;
                     gradeReviewV3s[i].setComments(comments);
@@ -960,17 +951,18 @@ public class ClassroomController {
                 }
             }
         }
-        return ResponseEntity.ok(new CommentResponse(200, true, "Comment added successfully",comment));
+        return ResponseEntity.ok(new CommentResponse(200, true, "Comment added successfully", comment));
     }
+
     //done 16
     @PatchMapping({"/{slug}/assignment/{id}"})
-    public ResponseEntity<?>updateAssignment(@PathVariable String slug,@PathVariable String id,@Valid @RequestBody AssignmentRequest assignmentRequest,@CurrentUser UserPrincipal userPrincipal ){
+    public ResponseEntity<?> updateAssignment(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody AssignmentRequest assignmentRequest, @CurrentUser UserPrincipal userPrincipal) {
         Classroom classroom = classroomRepository.findBySlug(slug);
-        Grade[] grades= new Grade[0];
+        Grade[] grades = new Grade[0];
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
-        if(classroom.getTeachers()!=null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())){
+        if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
         }
         Assignment assignment = assignmentRepository.findBy_id(id);
@@ -981,7 +973,7 @@ public class ClassroomController {
         assignment.setPoint(assignmentRequest.getPoint());
         assignment.setUpdateAt(LocalDate.now());
         assignmentRepository.save(assignment);
-        AssignmentV2 assignmentV2=new AssignmentV2();
+        AssignmentV2 assignmentV2 = new AssignmentV2();
         assignmentV2.set_id(assignment.get_id());
         assignmentV2.setName(assignment.getName());
         assignmentV2.setPoint(assignment.getPoint());
@@ -990,7 +982,7 @@ public class ClassroomController {
         String[] strGrade = assignment.getGrades() != null
                 ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
                 : new String[0];
-        for(int i=0;i<strGrade.length;i++){
+        for (int i = 0; i < strGrade.length; i++) {
             grades = new Grade[strGrade.length];
             for (int j = 0; j < strGrade.length; j++) {
 
@@ -1008,11 +1000,13 @@ public class ClassroomController {
         }
         assignmentV2.setGrades(gradesV2);
 
-        return ResponseEntity.ok(new AssignmentResponeV2(200, true, "Assignment updated successfully",assignmentV2));
+        return ResponseEntity.ok(new AssignmentResponeV2(200, true, "Assignment updated successfully", assignmentV2));
     }
+
     @DeleteMapping({"/{slug}/assignment/{id}"})
-    public ResponseEntity<?>   deleteAssignment(@PathVariable String slug,@PathVariable String id,@CurrentUser UserPrincipal userPrincipal ) {
+    public ResponseEntity<?> deleteAssignment(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal) {
         Classroom classroom = classroomRepository.findBySlug(slug);
+        GradeReview gradeReview = gradeReviewRepository.findByAssignmentId(id);
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
@@ -1023,7 +1017,84 @@ public class ClassroomController {
         if (assignment == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Assignment not found"));
         }
+        String[] strAssignments = classroom.getAssignments() != null
+                ? convertStringToArrayList.convertToArrayList(classroom.getAssignments()).toArray(new String[0])
+                : new String[0];
+        String[] strGrade = assignment.getGrades() != null
+                ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
+                : new String[0];
+
+        if (gradeReview != null) {
+            String[] strComment = gradeReview.getComments() != null
+                    ? convertStringToArrayList.convertToArrayList(gradeReview.getComments()).toArray(new String[0])
+                    : new String[0];
+            ArrayList<String> commentList = new ArrayList<String>();
+
+            for (int i = 0; i < strComment.length; i++) {
+                if (!strComment[i].equals(id)) {
+                    commentList.add(strComment[i]);
+                }
+
+            }
+            String[] newStrComments = commentList.toArray(new String[0]);
+            if (newStrComments.length == 0) {
+                gradeReview.setComments(null);
+                gradeReviewRepository.save(gradeReview);
+            } else {
+                gradeReview.setComments(String.join(",", newStrComments));
+                gradeReviewRepository.save(gradeReview);
+            }
+            for (int i = 0; i < newStrComments.length; i++) {
+                Comment comment = commentRepository.findBy_id(newStrComments[i]);
+                commentRepository.delete(comment);
+            }
+
+        }
+
+        System.out.println("222222222222222222222");
+
+        ArrayList<String> assignmetsList = new ArrayList<String>();
+        ArrayList<String> gradesList = new ArrayList<String>();
+        System.out.println("333333333333333333333333");
+
+        for (int i = 0; i < strAssignments.length; i++) {
+            if (!strAssignments[i].equals(id)) {
+                assignmetsList.add(strAssignments[i]);
+            }
+        }
+        for (int i = 0; i < strGrade.length; i++) {
+            if (!strGrade[i].equals(id)) {
+                gradesList.add(strGrade[i]);
+            }
+        }
+        String[] newStrAssignments = assignmetsList.toArray(new String[0]);
+        String[] newStrGrades = gradesList.toArray(new String[0]);
+        if (newStrAssignments.length == 0) {
+            classroom.setAssignments(null);
+            classroomRepository.save(classroom);
+        } else {
+            classroom.setAssignments(String.join(",", newStrAssignments));
+            classroomRepository.save(classroom);
+        }
+        if (newStrGrades.length == 0) {
+            assignment.setGrades(null);
+            assignmentRepository.save(assignment);
+
+        } else {
+            assignment.setGrades(String.join(",", newStrGrades));
+            assignmentRepository.save(assignment);
+        }
+
+        for (int i = 0; i < newStrGrades.length; i++) {
+            Grade grade = gradeRepository.findBy_id(newStrGrades[i]);
+            gradeRepository.delete(grade);
+        }
+        if (gradeReview != null) {
+            gradeReviewRepository.delete(gradeReview);
+        }
+
         assignmentRepository.delete(assignment);
+
         return ResponseEntity.ok(new ApiResponse(200, true, "Assignment deleted successfully"));
     }
 
