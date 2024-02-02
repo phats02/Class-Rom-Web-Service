@@ -1,8 +1,11 @@
 package com.example.springsocial.payload;
 
 public class AssignmentRequest {
-    String name;
-    float point;
+    private String name;
+    private float point;
+
+
+
 
     public String getName() {
         return name;
@@ -19,4 +22,6 @@ public class AssignmentRequest {
     public void setPoint(float point) {
         this.point = point;
     }
+
+
 }

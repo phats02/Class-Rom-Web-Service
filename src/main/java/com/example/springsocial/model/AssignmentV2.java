@@ -9,9 +9,9 @@ public class AssignmentV2<T> {
 
     private String _id;
 
-    private LocalDate created_at;
+    private LocalDate createdAt;
 
-    private LocalDate update_at;
+    private LocalDate updatedAt;
 
     private String name;
 
@@ -29,19 +29,19 @@ public class AssignmentV2<T> {
     }
 
     public LocalDate getCreated_at() {
-        return created_at;
+        return createdAt;
     }
 
     public void setCreated_at(LocalDate created_at) {
-        this.created_at = created_at;
+        this.createdAt = created_at;
     }
 
     public LocalDate getUpdate_at() {
-        return update_at;
+        return updatedAt;
     }
 
     public void setUpdate_at(LocalDate update_at) {
-        this.update_at = update_at;
+        this.updatedAt = update_at;
     }
 
     public String getName() {

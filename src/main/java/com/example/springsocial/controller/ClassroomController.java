@@ -962,5 +962,70 @@ public class ClassroomController {
         }
         return ResponseEntity.ok(new CommentResponse(200, true, "Comment added successfully",comment));
     }
+    //done 16
+    @PatchMapping({"/{slug}/assignment/{id}"})
+    public ResponseEntity<?>updateAssignment(@PathVariable String slug,@PathVariable String id,@Valid @RequestBody AssignmentRequest assignmentRequest,@CurrentUser UserPrincipal userPrincipal ){
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        Grade[] grades= new Grade[0];
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+        if(classroom.getTeachers()!=null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())){
+            return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
+        }
+        Assignment assignment = assignmentRepository.findBy_id(id);
+        if (assignment == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Assignment not found"));
+        }
+        assignment.setName(assignmentRequest.getName());
+        assignment.setPoint(assignmentRequest.getPoint());
+        assignment.setUpdateAt(LocalDate.now());
+        assignmentRepository.save(assignment);
+        AssignmentV2 assignmentV2=new AssignmentV2();
+        assignmentV2.set_id(assignment.get_id());
+        assignmentV2.setName(assignment.getName());
+        assignmentV2.setPoint(assignment.getPoint());
+        assignmentV2.setCreated_at(assignment.getCreatedAt());
+        assignmentV2.setUpdate_at(assignment.getUpdateAt());
+        String[] strGrade = assignment.getGrades() != null
+                ? convertStringToArrayList.convertToArrayList(assignment.getGrades()).toArray(new String[0])
+                : new String[0];
+        for(int i=0;i<strGrade.length;i++){
+            grades = new Grade[strGrade.length];
+            for (int j = 0; j < strGrade.length; j++) {
+
+                grades[j] = gradeRepository.findBy_id(strGrade[j]);
+            }
+        }
+        GradeV2[] gradesV2 = new GradeV2[grades.length];
+        for (int i = 0; i < grades.length; i++) {
+            gradesV2[i] = new GradeV2();
+            gradesV2[i].setGradeid(grades[i].getId());
+            gradesV2[i].setId(grades[i].getStudentId());
+            gradesV2[i].set_id(grades[i].get_id());
+            gradesV2[i].setDraft(grades[i].isDraft());
+            gradesV2[i].setGrade(grades[i].getGrade());
+        }
+        assignmentV2.setGrades(gradesV2);
+
+        return ResponseEntity.ok(new AssignmentResponeV2(200, true, "Assignment updated successfully",assignmentV2));
+    }
+    @DeleteMapping({"/{slug}/assignment/{id}"})
+    public ResponseEntity<?>   deleteAssignment(@PathVariable String slug,@PathVariable String id,@CurrentUser UserPrincipal userPrincipal ) {
+        Classroom classroom = classroomRepository.findBySlug(slug);
+        if (classroom == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
+        }
+        if (classroom.getTeachers() != null && !Arrays.asList(classroom.getTeachers()).contains(userPrincipal.get_id())) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Unauthorized"));
+        }
+        Assignment assignment = assignmentRepository.findBy_id(id);
+        if (assignment == null) {
+            return ResponseEntity.ok(new ApiResponse(200, false, "Assignment not found"));
+        }
+        assignmentRepository.delete(assignment);
+        return ResponseEntity.ok(new ApiResponse(200, true, "Assignment deleted successfully"));
+    }
+
 
 }
