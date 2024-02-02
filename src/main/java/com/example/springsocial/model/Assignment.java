@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Table(name = "assignments", uniqueConstraints = {
         @UniqueConstraint(columnNames = "_id")
 })
-public class Assignment {
+public class Assignment implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -80,5 +80,14 @@ public class Assignment {
 
     public void setGrades(String grades) {
         this.grades = grades;
+    }
+
+    @Override
+    public Assignment clone() {
+        try {
+            return (Assignment) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }

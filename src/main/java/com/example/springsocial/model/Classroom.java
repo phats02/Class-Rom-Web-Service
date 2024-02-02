@@ -9,7 +9,7 @@ import java.util.ArrayList;
 @Table(name = "courses", uniqueConstraints = {
         @UniqueConstraint(columnNames = "_id")
 })
-public class Classroom {
+public class Classroom implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -142,10 +142,10 @@ public class Classroom {
         this.id = id;
     }
 
-//    @Override
-//    public Classroom clone() throws CloneNotSupportedException {
-//        return (Classroom) super.clone();
-//    }
+    @Override
+    public Classroom clone() throws CloneNotSupportedException {
+        return (Classroom) super.clone();
+    }
 
 
 }

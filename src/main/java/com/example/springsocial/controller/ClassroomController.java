@@ -210,10 +210,9 @@ public class ClassroomController {
 
         classroom.setTeachers(userPrincipal.get_id());
 
-//        classroomRepository.save(classroom);
-//        //design pattern:prototype
-//        Classroom result = classroom.clone();
-        Classroom result = classroomRepository.save(classroom);
+        classroomRepository.save(classroom);
+        //design pattern:prototype
+        Classroom result = classroom.clone();
 
         invitation.set_id(randomInvitationId);
         invitation.setCourseId(result.get_id());
@@ -262,8 +261,10 @@ public class ClassroomController {
 
     //done 3
     @GetMapping("/{slug}")
-    public ResponseEntity<?> showOneClassroom(@PathVariable String slug) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> showOneClassroom(@PathVariable String slug) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         Grade[] grades = new Grade[0];
 
         if (classroom == null) {
@@ -315,9 +316,7 @@ public class ClassroomController {
             this.course.setUpdateAt(classroom.getUpdateAt());
             Assignment[] assignments = new Assignment[strAssignments.length];
             AssignmentV2[] assignmentsV2 = new AssignmentV2[strAssignments.length];
-            System.out.println("LENGTHHHH" + strAssignments.length);
             for (int i = 0; i < strAssignments.length; i++) {
-                System.out.println("111111111111111111");
 
                 assignmentsV2[i] = new AssignmentV2();
                 assignments[i] = assignmentRepository.findBy_id(strAssignments[i]);
@@ -357,11 +356,9 @@ public class ClassroomController {
             if (assignmentsV2.length != 0)
                 this.course.setAssignments(assignmentsV2);
             else if (assignmentsV2.length == 0) {
-                System.out.println("222222222222222222");
 
                 this.course.setAssignments(new AssignmentV2[0]);
             }
-            System.out.println("3333333333333333333");
 
 
             URI location = ServletUriComponentsBuilder
@@ -377,8 +374,9 @@ public class ClassroomController {
 
     //done 4
     @GetMapping({"/{classId}/invitation"})
-    public ResponseEntity<?> ShowClassroomCode(@PathVariable String classId) {
-        Invitation invitation = invitationRepository.findByCourseId(classId);
+    public ResponseEntity<?> ShowClassroomCode(@PathVariable String classId) throws CloneNotSupportedException {
+        Invitation invitation1 = invitationRepository.findByCourseId(classId);
+        Invitation invitation = invitation1.clone();
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .buildAndExpand(invitation.get_id()).toUri();
@@ -391,9 +389,10 @@ public class ClassroomController {
 
     //done 5
     @GetMapping({"/join/{id}"})
-    public ResponseEntity<?> joinCourse(@PathVariable String id, @CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<?> joinCourse(@PathVariable String id, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
-        Invitation invitation = invitationRepository.findByInviteCode(id);
+        Invitation invitation1 = invitationRepository.findByInviteCode(id);
+        Invitation invitation = invitation1.clone();
 
         if (invitation == null) {
             System.out.println("invite not founddddddddddd");
@@ -472,8 +471,10 @@ public class ClassroomController {
 
     //done 7
     @PostMapping({"/{slug}/assignment"})
-    public ResponseEntity<?> createAssignment(@PathVariable String slug, @Valid @RequestBody AssignmentRequest assignmentRequest, @CurrentUser UserPrincipal userPrincipal) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> createAssignment(@PathVariable String slug, @Valid @RequestBody AssignmentRequest assignmentRequest, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         String randomGradeId = randomStringSingleton.generateRandomString(24);
 
         if (classroom == null) {
@@ -506,13 +507,16 @@ public class ClassroomController {
         assignmentV2.setUpdate_at(assignment.getUpdateAt());
         assignmentV2.setGrades(new User[0]);
 
+
         return ResponseEntity.ok(new AssignmentResponeV2(200, true, "Assignment added successfully", assignmentV2));
     }
 
     //done 6
     @GetMapping({"/{slug}/assignment"})
-    public ResponseEntity<?> showAssignment(@PathVariable String slug, @CurrentUser UserPrincipal userPrincipal) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> showAssignment(@PathVariable String slug, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
@@ -548,8 +552,10 @@ public class ClassroomController {
 
     //done 8
     @PostMapping({"/{slug}/studentid"})
-    public ResponseEntity<?> setCourseStudentIds(@PathVariable String slug, @Valid @RequestBody ClassroomRequest classroomRequest) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> setCourseStudentIds(@PathVariable String slug, @Valid @RequestBody ClassroomRequest classroomRequest) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
@@ -574,8 +580,10 @@ public class ClassroomController {
 
     //done 10
     @PostMapping("/{slug}/assignment/{id}/grade")
-    public ResponseEntity<?> setSingleStudentGrade(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> setSingleStudentGrade(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         String randomGradeId = randomStringSingleton.generateRandomString(24);
         Assignment assignment = new Assignment();
         Grade checkGradeExist = new Grade();
@@ -637,8 +645,10 @@ public class ClassroomController {
 
     //done 9
     @GetMapping("/{slug}/assignment/{id}/grade")
-    public ResponseEntity<?> getSingleStudentGrade(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> getSingleStudentGrade(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         Assignment assignment = new Assignment();
         Grade[] grades = new Grade[0];
         if (classroom == null) {
@@ -681,8 +691,10 @@ public class ClassroomController {
 
     //done 11
     @PostMapping("/{slug}/assignment/{id}/finalize")
-    public ResponseEntity<?> setSingleGradeFinalize(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> setSingleGradeFinalize(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody ClassroomRequest classroomRequest, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         Assignment assignment = new Assignment();
         Grade[] grades = new Grade[0];
         Grade grade = new Grade();
@@ -717,8 +729,10 @@ public class ClassroomController {
 
     //done 12
     @GetMapping("/{slug}/assignment/{id}/review")
-    public ResponseEntity<?> getGradeReviews(@PathVariable String slug, @PathVariable String id) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> getGradeReviews(@PathVariable String slug, @PathVariable String id) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         Assignment assignment = new Assignment();
         Grade[] grades = new Grade[0];
         Grade grade = new Grade();
@@ -805,8 +819,10 @@ public class ClassroomController {
 
     //done 13
     @PostMapping("/{slug}/assignment/{id}/review")
-    public ResponseEntity<?> submitGradeReview(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> submitGradeReview(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Assignment assignment = new Assignment();
         Grade[] grades = new Grade[0];
@@ -857,8 +873,10 @@ public class ClassroomController {
 
     //done 14
     @PostMapping("/{slug}/assignment/{id}/review/{reviewId}/finalize")
-    public ResponseEntity<?> makeFinalReview(@PathVariable String slug, @PathVariable String id, @PathVariable String reviewId, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> makeFinalReview(@PathVariable String slug, @PathVariable String id, @PathVariable String reviewId, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ReviewRequest reviewRequest) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Assignment assignment = new Assignment();
         Grade grade = new Grade();
@@ -907,8 +925,10 @@ public class ClassroomController {
 
     //done 15
     @PostMapping("/{slug}/assignment/{id}/review/{reviewId}/comment")
-    public ResponseEntity<?> reviewAddComment(@PathVariable String slug, @PathVariable String id, @PathVariable String reviewId, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody CommentRequest commentRequest) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> reviewAddComment(@PathVariable String slug, @PathVariable String id, @PathVariable String reviewId, @CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody CommentRequest commentRequest) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Assignment assignment = new Assignment();
         Grade grade = new Grade();
@@ -956,8 +976,10 @@ public class ClassroomController {
 
     //done 16
     @PatchMapping({"/{slug}/assignment/{id}"})
-    public ResponseEntity<?> updateAssignment(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody AssignmentRequest assignmentRequest, @CurrentUser UserPrincipal userPrincipal) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> updateAssignment(@PathVariable String slug, @PathVariable String id, @Valid @RequestBody AssignmentRequest assignmentRequest, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         Grade[] grades = new Grade[0];
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
@@ -1004,9 +1026,12 @@ public class ClassroomController {
     }
 
     @DeleteMapping({"/{slug}/assignment/{id}"})
-    public ResponseEntity<?> deleteAssignment(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal) {
-        Classroom classroom = classroomRepository.findBySlug(slug);
+    public ResponseEntity<?> deleteAssignment(@PathVariable String slug, @PathVariable String id, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        Classroom classroom1 = classroomRepository.findBySlug(slug);
+        //design pattern:prototype
+        Classroom classroom = classroom1.clone();
         GradeReview gradeReview = gradeReviewRepository.findByAssignmentId(id);
+
         if (classroom == null) {
             return ResponseEntity.ok(new ApiResponse(200, false, "Course not found"));
         }
@@ -1051,11 +1076,9 @@ public class ClassroomController {
 
         }
 
-        System.out.println("222222222222222222222");
 
         ArrayList<String> assignmetsList = new ArrayList<String>();
         ArrayList<String> gradesList = new ArrayList<String>();
-        System.out.println("333333333333333333333333");
 
         for (int i = 0; i < strAssignments.length; i++) {
             if (!strAssignments[i].equals(id)) {

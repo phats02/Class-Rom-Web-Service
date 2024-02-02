@@ -2,7 +2,6 @@ package com.example.springsocial.security.oauth2.user;
 
 import java.util.Map;
 
-//design pattern:template pattern
 public class GithubOAuth2UserInfo extends OAuth2UserInfo {
 
     public GithubOAuth2UserInfo(Map<String, Object> attributes) {

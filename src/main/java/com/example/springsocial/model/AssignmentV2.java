@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 
 @Repository
-public class AssignmentV2<T> {
+public class AssignmentV2<T> implements Cloneable {
 
     private String _id;
 
@@ -74,5 +74,14 @@ public class AssignmentV2<T> {
 
     public void setGrade(String grade) {
         this.grade = grade;
+    }
+
+    @Override
+    public AssignmentV2<T> clone() {
+        try {
+            return (AssignmentV2<T>) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }

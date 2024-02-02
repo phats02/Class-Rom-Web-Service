@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Table(name = "invitations", uniqueConstraints = {
         @UniqueConstraint(columnNames = "_id")
 })
-public class Invitation {
+public class Invitation implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -81,5 +81,9 @@ public class Invitation {
 
     public void setInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
+    }
+
+    public Invitation clone() throws CloneNotSupportedException {
+        return (Invitation) super.clone();
     }
 }
