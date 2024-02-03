@@ -67,6 +67,42 @@ public class AuthController {
     private CustomUserDetailsService customUserDetailsService;
     @Autowired
     RandomStringSingleton randomStringSingleton = RandomStringSingleton.getInstance();
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request)
+            throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            throw new BadRequestException("Email address already in use.");
+        }
+        LocalDate currentTime = LocalDate.now();
+        // Creating user's account
+        User user = new User();
+        //design pattern  singleton
+        String IDrandomCode = randomStringSingleton.generateRandomString(24);;
+        user.set_id(IDrandomCode);
+        user.setCreatedAt(currentTime);
+        user.setName(signUpRequest.getName());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(signUpRequest.getPassword());
+        user.setProvider(AuthProvider.local);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //Generate random verification code
+        String randomCode = RandomString.make(64);
+        user.setActivationCode(randomCode);
+
+        //sent verification mail
+        String siteURL = UrlUtils.getSiteURL(request);
+        sendVerificationEmail(user, siteURL);
+        User result = userRepository.save(user);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/user/me")
+                .buildAndExpand(result.get_id()).toUri();
+
+        ApiResponse response = new ApiResponse(200, true, "Successful account registration. An email has been sent. Please check your inbox.");
+
+        return ResponseEntity.created(location).body(response);
+
+
+    }
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, TokenProvider tokenProvider, JavaMailSender mailSender, CustomUserDetailsService customUserDetailsService) {
         this.authenticationManager = authenticationManager;
@@ -101,46 +137,6 @@ public class AuthController {
     }
 
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest, HttpServletRequest request)
-            throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("Email address already in use.");
-        }
-        LocalDate currentTime = LocalDate.now();
-        // Creating user's account
-        User user = new User();
-        //design pattern  singleton
-        String IDrandomCode = randomStringSingleton.generateRandomString(24);;
-        user.set_id(IDrandomCode);
-        user.setCreatedAt(currentTime);
-        user.setName(signUpRequest.getName());
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(signUpRequest.getPassword());
-        user.setProvider(AuthProvider.local);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        //Generate random verification code
-        String randomCode = RandomString.make(64);
-        user.setActivationCode(randomCode);
-
-
-        //sent verification mail
-        String siteURL = UrlUtils.getSiteURL(request);
-        sendVerificationEmail(user, siteURL);
-
-        User result = userRepository.save(user);
-
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/me")
-                .buildAndExpand(result.get_id()).toUri();
-
-        ApiResponse response = new ApiResponse(200, true, "Successful account registration. An email has been sent. Please check your inbox.");
-
-        return ResponseEntity.created(location).body(response);
-
-
-    }
 
     public void sendVerificationEmail(User user, String siteURL)
             throws MessagingException, UnsupportedEncodingException {

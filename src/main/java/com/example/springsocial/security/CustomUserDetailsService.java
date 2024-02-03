@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-/**
- * Created by rajeevkumarsingh on 02/08/17.
- */
+
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -35,7 +33,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return UserPrincipal.create(user);
     }
-
     @Transactional
     public UserDetails loadUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(
@@ -44,7 +41,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return UserPrincipal.create(user);
     }
-
     @Transactional
     public User loadUserByActivationCode(String code) {
         User user = userRepository.findByActivationCode(code).orElseThrow(
@@ -53,12 +49,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return user;
     }
-
     @Transactional
     public User loadUserByEmail(String email) {
-//        User user = userRepository.findByEmail(email).orElseThrow(
-//                () -> new ResourceNotFoundException("users", "email", email)
-//        );
+
         User user=userRepository.findByEmail(email).orElse(null);
         return user;
     }
@@ -68,10 +61,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 -> new ResourceNotFoundException("users", "_id", _id));
         return user;
     }
-
-
-
-
-
-
 }

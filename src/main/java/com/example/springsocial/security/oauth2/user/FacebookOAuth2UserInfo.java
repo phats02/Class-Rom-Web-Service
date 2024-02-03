@@ -1,7 +1,7 @@
 package com.example.springsocial.security.oauth2.user;
 
 import java.util.Map;
-
+//design pattern : template method
 public class FacebookOAuth2UserInfo extends OAuth2UserInfo {
     public FacebookOAuth2UserInfo(Map<String, Object> attributes) {
         super(attributes);

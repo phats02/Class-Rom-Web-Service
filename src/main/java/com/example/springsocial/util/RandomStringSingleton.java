@@ -13,24 +13,6 @@ import java.util.Random;
 //design pattern singleton
 @Component
 public class RandomStringSingleton {
-//    private static RandomStringSingleton instance;
-//    private RandomString randomString;
-//
-//    private RandomStringSingleton(int length) {
-//        randomString = new RandomString(length);
-//    }
-//
-//    public static  RandomStringSingleton getInstance(int length) {
-//        if (instance == null) {
-//            instance = new RandomStringSingleton(length);
-//        }
-//        return instance;
-//    }
-//
-//    public String make() {
-//        return randomString.make();
-//    }
-
     private static RandomStringSingleton instance;
     private final Random random;
 

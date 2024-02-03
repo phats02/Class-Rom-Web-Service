@@ -27,12 +27,11 @@ import java.util.*;
 @RestController
 @RequestMapping("/courses")
 public class ClassroomController {
-    //design pattern spring singleton
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    //design pattern spring singleton
     @Autowired
     private InvitationRepository invitationRepository;
     @Autowired
@@ -62,11 +61,10 @@ public class ClassroomController {
     private AssignmentV2 assignmentRespone = new AssignmentV2();
     @Autowired
     private AssignmentV2[] assignmentRespones = new AssignmentV2[0];
-
+    //design pattern singleton
 
     @Autowired
     RandomStringSingleton randomStringSingleton = RandomStringSingleton.getInstance();
-    private static final String[] EmptyArrayString = {};
 
 
     private static void printVariableType(Object variable) {
@@ -141,12 +139,13 @@ public class ClassroomController {
                 String[] strStudentsIds = classroom[i].getStudentsIds() != null
                         ? convertStringToArrayList.convertToArrayList(classroom[i].getStudentsIds()).toArray(new String[0])
                         : new String[0];
-
+                //design pattern facade
                 this.courses[i].setOwner(customUserDetailsService.loadUserBy_id(classroom[i].getOwner()));
 
                 User[] userTeachers = new User[strTeachers.length];
 
                 for (int j = 0; j < strTeachers.length; j++) {
+                    //design pattern facade
                     userTeachers[j] = customUserDetailsService.loadUserBy_id(strTeachers[j]);
                 }
                 if (strTeachers.length != 0) {
@@ -288,13 +287,16 @@ public class ClassroomController {
             User[] userTeachers = new User[strTeachers.length];
             User[] userStudents = new User[strStudents.length];
             User[] userStudentsIds = new User[strStudentsIds.length];
+            //design pattern facade
             User owner = customUserDetailsService.loadUserBy_id(classroom.getOwner());
 
             for (int i = 0; i < strTeachers.length; i++) {
+                //design pattern facade
                 userTeachers[i] = customUserDetailsService.loadUserBy_id(strTeachers[i]);
             }
 
             for (int i = 0; i < strStudents.length; i++) {
+                //design pattern facade
                 userStudents[i] = customUserDetailsService.loadUserBy_id(strStudents[i]);
             }
 
@@ -390,6 +392,7 @@ public class ClassroomController {
     //done 5
     @GetMapping({"/join/{id}"})
     public ResponseEntity<?> joinCourse(@PathVariable String id, @CurrentUser UserPrincipal userPrincipal) throws CloneNotSupportedException {
+        //design pattern facade
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Invitation invitation1 = invitationRepository.findByInviteCode(id);
         Invitation invitation = invitation1.clone();
@@ -441,14 +444,17 @@ public class ClassroomController {
         User[] userStudentsIds = new User[strStudentsIds.length];
 
         for (int i = 0; i < strTeachers.length; i++) {
+            //design pattern facade
             userTeachers[i] = customUserDetailsService.loadUserBy_id(strTeachers[i]);
         }
 
         for (int i = 0; i < strStudents.length; i++) {
+            //design pattern facade
             userStudents[i] = customUserDetailsService.loadUserBy_id(strStudents[i]);
         }
 
         for (int i = 0; i < strStudentsIds.length; i++) {
+            //design pattern facade
             userStudentsIds[i] = customUserDetailsService.loadUserBy_id(strStudentsIds[i]);
         }
 
@@ -823,6 +829,7 @@ public class ClassroomController {
         Classroom classroom1 = classroomRepository.findBySlug(slug);
         //design pattern:prototype
         Classroom classroom = classroom1.clone();
+        //design pattern facade
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Assignment assignment = new Assignment();
         Grade[] grades = new Grade[0];
@@ -877,6 +884,7 @@ public class ClassroomController {
         Classroom classroom1 = classroomRepository.findBySlug(slug);
         //design pattern:prototype
         Classroom classroom = classroom1.clone();
+        //design pattern facade
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Assignment assignment = new Assignment();
         Grade grade = new Grade();
@@ -929,6 +937,7 @@ public class ClassroomController {
         Classroom classroom1 = classroomRepository.findBySlug(slug);
         //design pattern:prototype
         Classroom classroom = classroom1.clone();
+        //design pattern facade
         User user = customUserDetailsService.loadUserBy_id(userPrincipal.get_id());
         Assignment assignment = new Assignment();
         Grade grade = new Grade();
